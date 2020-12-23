@@ -1,14 +1,12 @@
 <?php
 
 /*
-	GitHub: https://github.com/matheusjohannaraujo/makemvcss
+	GitHub: https://github.com/matheusjohannaraujo/php_work_promise
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-22
+	Date: 2020-12-23
 */
-
-require_once "tick.php";
 
 class Promise {
 
@@ -17,7 +15,7 @@ class Promise {
     private $fun = [];
     private $self = null;
 
-    public function __construct($fun = null) {
+    public function __construct(callable $fun) {
         $this->fun["resolve"] = function($val = null) {
             if ($this->type !== null) {
                 return;
@@ -35,34 +33,32 @@ class Promise {
         $this->fun["then"] = function() {};
         $this->fun["catch"] = function() {};
         $this->fun["finally"] = function() {};
-        if (is_callable($fun)) {
-            $fun($this->fun["resolve"], $this->fun["rejected"]);
-        }
+        $fun($this->fun["resolve"], $this->fun["rejected"]);
         $this->self = $this;
     }
 
     private $interval = null;
 
-    public function then($fun) {
-        if (is_callable($fun)) {
-            $this->fun["then"] = &$fun;
+    public function then(callable $then, callable $catch = null, callable $finally = null) {
+        $this->fun["then"] = &$then;
+        if ($catch !== null) {
+            $this->fun["catch"] = &$catch;
+        }
+        if ($finally !== null) {
+            $this->fun["finally"] = &$finally;
         }
         $this->run();
         return $this->self;
     }
 
-    public function catch($fun) {
-        if (is_callable($fun)) {
-            $this->fun["catch"] = &$fun;
-        }
+    public function catch(callable $catch) {
+        $this->fun["catch"] = &$catch;
         $this->run();
         return $this->self;
     }
 
-    public function finally($fun) {
-        if (is_callable($fun)) {
-            $this->fun["finally"] = &$fun;
-        }
+    public function finally(callable $finally) {
+        $this->fun["finally"] = &$finally;
         $this->run();
         return $this->self;
     }
@@ -72,12 +68,11 @@ class Promise {
             $v = &$this->self;
             $this->interval = setInterval(function() use (&$v) {
                 if ($v->type !== null) {
-                    $uid = $v->interval;                    
-                    clearInterval($uid);
+                    clearInterval($v->interval);
                     $v->interval = "closed";
                     $v->run();
                 }
-            }, 100);
+            }, 1);
         }
         if ($this->interval == "closed") {
             if ($this->type == "resolve") {
