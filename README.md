@@ -6,7 +6,7 @@ const DEVELOPER_INFO = [
     "autor" => "Matheus Johann Araújo",
     "country" => "Brasil",
     "state" => "Pernambuco",
-    "date" => "2020-12-23"
+    "date" => "2020-12-26"
 ];
 ```
 
@@ -35,9 +35,9 @@ const DEVELOPER_INFO = [
 ```php
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, do not use TICK on a WEB server
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, não use o TICK em servidor WEB
-// declare(ticks=1);
+// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
+// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+declare(ticks=1);
 require_once "work.php";
 
 echo "Inicio\r\n";
@@ -67,7 +67,7 @@ echo "workRun foi executado $count vezes\r\n";
 echo "Fim\r\n";
 ```
 
-#### Observação: A biblioteca Work é compatível com PHP 8 e PHP 7, e serve como uma forma de escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona.
+#### Observação: A biblioteca Work é compatível com PHP 8 e PHP 7.2 em diante, e serve como uma forma de escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona.
 
 #### <em>Promise</em> é uma biblioteca que implementa o modelo de funcionamento da <em>Promise</em> em <em>JavaScript</em>.
 
@@ -82,9 +82,9 @@ echo "Fim\r\n";
 ```php
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, do not use TICK on a WEB server
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, não use o TICK em servidor WEB
-// declare(ticks=1);
+// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
+// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+declare(ticks=1);
 require_once "work.php";
 require_once "Promise.php";
 
@@ -106,11 +106,15 @@ $promise->then(function($value) {
 });
 
 echo "Processamento...\r\n";
+for ($i = 0; $i < 10; $i++) {
+    echo "Loop $i\r\n";
+    usleep(200000);
+}
 
 // EN-US: Include after timed calls
 // PT-BR: Incluir após chamadas programadas (agendadas)
 $count = workWait(function() { usleep(1); });
 echo "workRun foi executado $count vezes\r\n";
 
-echo "Fim\r\n;
+echo "Fim\r\n";
 ```

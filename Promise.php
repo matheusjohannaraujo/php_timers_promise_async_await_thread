@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-23
+	Date: 2020-12-26
 */
 
 class Promise {
@@ -15,7 +15,7 @@ class Promise {
     private $fun = [];
     private $self = null;
 
-    public function __construct(callable $fun) {
+    public function __construct(callable $main) {
         $this->fun["resolve"] = function($val = null) {
             if ($this->type !== null) {
                 return;
@@ -33,7 +33,7 @@ class Promise {
         $this->fun["then"] = function() {};
         $this->fun["catch"] = function() {};
         $this->fun["finally"] = function() {};
-        $fun($this->fun["resolve"], $this->fun["rejected"]);
+        $main($this->fun["resolve"], $this->fun["rejected"]);
         $this->self = $this;
     }
 
@@ -72,7 +72,7 @@ class Promise {
                     $v->interval = "closed";
                     $v->run();
                 }
-            }, 1);
+            }, 50);
         }
         if ($this->interval == "closed") {
             if ($this->type == "resolve") {

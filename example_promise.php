@@ -5,10 +5,10 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-23
+	Date: 2020-12-26
 */
 
-//declare(ticks=1);
+declare(ticks=1);
 require_once "work.php";
 require_once "Promise.php";
 
@@ -30,6 +30,10 @@ $promise->then(function($value) {
 });
 
 echo "Processamento...\r\n";
+for ($j = 0; $j < 10; $j++) {
+    echo "Loop $j\r\n";
+    usleep(200000);
+}
 
 $count = workWait(function() { usleep(1); });
 echo "workRun foi executado $count vezes\r\n";

@@ -5,10 +5,10 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-23
+	Date: 2020-12-26
 */
 
-//declare(ticks=1);
+declare(ticks=1);
 require_once "work.php";
 
 echo "Inicio\r\n";

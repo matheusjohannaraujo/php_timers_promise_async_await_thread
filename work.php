@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-23
+	Date: 2020-12-26
 */
 
 /*
@@ -23,69 +23,86 @@ PT-BR: Incluir após chamadas programadas (agendadas)
 
 */
 
-$GL_WORKS = [];
+$GL_WORK = [];
+$GL_WORK_RUN_COUNT = 0;
 $GL_TICK = null;
 $GL_TICK_EXIST = false;
-$GL_CALL_COUNT_WORK_RUN = 0;
 
 function workRun() :bool
 {
-    global $GL_WORKS;
-    global $GL_CALL_COUNT_WORK_RUN;
-    $GL_CALL_COUNT_WORK_RUN++;
-    foreach ($GL_WORKS as $key => &$work) {
-        $last = &$work["last"];
-        $seconds = &$work["seconds"];
-        $now = microtime(true);
-        if ($now - $last > $seconds) {
-            $work["call"]();
-            if ($work["type"]) {
-                $last += $seconds;
-            } else {
-                unset($GL_WORKS[$key]);
+    global $GL_WORK;
+    global $GL_WORK_RUN_COUNT;
+    static $secondsTime;
+    static $lastTime;
+    if ($secondsTime === null && $lastTime === null) {
+        $secondsTime = 0 / 1000;// 0ms
+        $lastTime = microtime(true);
+    } else if (microtime(true) - $lastTime > $secondsTime) {
+        $GL_WORK_RUN_COUNT++;
+        $lastTime += $secondsTime;
+        $secondsTimeSmaller = null;
+        foreach ($GL_WORK as $key => &$work) {
+            $last = &$work["last"];
+            $seconds = &$work["seconds"];
+            if ($secondsTimeSmaller === null) {
+                $secondsTimeSmaller = $seconds;
+            } else if ($secondsTimeSmaller > $seconds) {
+                $secondsTimeSmaller = $seconds;
+            }
+            if (microtime(true) - $last > $seconds) {
+                $work["call"]();
+                if ($work["type"]) {
+                    $last += $seconds;
+                } else {
+                    unset($GL_WORK[$key]);
+                }
             }
         }
+        $secondsTime = $secondsTimeSmaller;
     }
-    return count($GL_WORKS) > 0;
+    return count($GL_WORK) > 0;
 }
 
 function workWait(callable $call) :int
 {
     global $GL_TICK_EXIST;
-    global $GL_CALL_COUNT_WORK_RUN;
+    global $GL_WORK_RUN_COUNT;
     if ($GL_TICK_EXIST) {
         return workWaitTick($call);
     }
     while (workRun()) { $call(); }
-    return $GL_CALL_COUNT_WORK_RUN;
+    return $GL_WORK_RUN_COUNT;
 }
 
 function workWaitTick(callable $call) :int
 {
-    global $GL_WORKS;
+    global $GL_WORK;
     global $GL_TICK;
-    global $GL_CALL_COUNT_WORK_RUN;
-    while (count($GL_WORKS) > 0) { $call(); }
+    global $GL_WORK_RUN_COUNT;
+    while (count($GL_WORK) > 0) { $call(); }
     unregister_tick_function($GL_TICK);
-    $GL_WORKS = [];
+    $GL_WORK = [];
     $GL_TICK = null;
-    return $GL_CALL_COUNT_WORK_RUN;
+    return $GL_WORK_RUN_COUNT;
 }
 
 function setInterval(callable $call, int $ms, bool $type = true) :string
 {
-    global $GL_WORKS;
+    global $GL_WORK;
     global $GL_TICK;
-    global $GL_CALL_COUNT_WORK_RUN;
+    global $GL_WORK_RUN_COUNT;
     $uid = uniqid();
-    $GL_WORKS[$uid] = [
+    if ($ms < 0) {
+        $ms = 0;
+    }
+    $GL_WORK[$uid] = [
         "call" => &$call,
         "last" => microtime(true),
         "seconds" => $ms / 1000,
         "type" => &$type
     ];
     if ($GL_TICK === null) {
-        $GL_CALL_COUNT_WORK_RUN = 0;
+        $GL_WORK_RUN_COUNT = 0;
         $GL_TICK = function () {
             global $GL_TICK_EXIST;
             $GL_TICK_EXIST = true;
@@ -103,9 +120,9 @@ function setTimeout(callable $call, int $ms) :string
 
 function clearInterval($uid) :bool
 {
-    global $GL_WORKS;
-    if (isset($GL_WORKS[$uid])) {
-        unset($GL_WORKS[$uid]);
+    global $GL_WORK;
+    if (isset($GL_WORK[$uid])) {
+        unset($GL_WORK[$uid]);
         return true;
     }
     return false;
