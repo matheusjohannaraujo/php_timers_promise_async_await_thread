@@ -6,11 +6,11 @@ const DEVELOPER_INFO = [
     "autor" => "Matheus Johann Araújo",
     "country" => "Brasil",
     "state" => "Pernambuco",
-    "date" => "2020-12-26"
+    "date" => "2021-08-29"
 ];
 ```
 
-## Guia de uso da biblioteca <em>Work e Promise</em> na linguagem PHP
+## [YouTube - Guia de uso da biblioteca <em>Work e Promise</em> na linguagem PHP](https://www.youtube.com/watch?v=sBMF3HlWElQ)
 
 * O termo `callback` significa função passada como parâmetro de uma função, que será chamado por uma função. Em `PHP` os `callbacks` são do tipo `callable` que significa chamável;
 
@@ -40,34 +40,34 @@ const DEVELOPER_INFO = [
 declare(ticks=1);
 require_once "work.php";
 
-echo "Inicio\r\n";
+echo "Start", PHP_EOL;
 
-$i = 1;
+$counter = 1;
 
-$uid = setInterval(function() use (&$i) {
-    echo "Contador " . $i++ . "\r\n";
+$uid = setInterval(function() use (&$counter) {
+    echo "Counter: ", $counter++, PHP_EOL;
 }, 100);
 
 setTimeout(function() {
-    echo "Metade\r\n";
+    echo "Half of the increments", PHP_EOL;
 }, 1000);
 
 setTimeout(function() use ($uid) {
-    echo "Para Contador\r\n";
+    echo "Stopping the counter", PHP_EOL;
     clearInterval($uid);
 }, 2000);
 
-echo "Processamento...\r\n";
+echo "Processing...", PHP_EOL;
 
 // EN-US: Include after timed calls
 // PT-BR: Incluir após chamadas programadas (agendadas)
 $count = workWait(function() { usleep(1); });
-echo "workRun foi executado $count vezes\r\n";
+echo "workRun has been run ${count} times", PHP_EOL;
 
-echo "Fim\r\n";
+echo "End", PHP_EOL;
 ```
 
-#### Observação: A biblioteca Work é compatível com PHP 8 e PHP 7.2 em diante, e serve como uma forma de escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona.
+#### Observação: A biblioteca Work permite escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona. É compatível com PHP 7.2 em diante.
 
 #### <em>Promise</em> é uma biblioteca que implementa o modelo de funcionamento da <em>Promise</em> em <em>JavaScript</em>.
 
@@ -82,39 +82,58 @@ echo "Fim\r\n";
 ```php
 <?php
 
+/*
+	GitHub: https://github.com/matheusjohannaraujo/php_work_promise
+	Country: Brasil
+	State: Pernambuco
+	Developer: Matheus Johann Araujo
+	Date: 2021-08-28
+*/
+
 // EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
 // PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
 require_once "work.php";
 require_once "Promise.php";
 
-echo "Inicio\r\n";
+echo "Start", PHP_EOL;
 
 $promise = new Promise(function($resolve, $reject) {
-    setTimeout(function() use($resolve) {
-        $resolve("ok");
+    $call = rand(0, 1) ? $resolve : $reject;
+    setTimeout(function() use($call) {
+        $call("message");
     }, 1000);
-    //$reject("error");
 });
 
-$promise->then(function($value) {
-    echo "then ", $value, "\r\n";
-})->catch(function($value) {
-    echo "catch ", $value, "\r\n";
-})->finally(function(){
-    echo "finally\r\n";
+function info_promise() {
+    global $promise;
+    echo "> monitor: ", $promise->getMonitor(), PHP_EOL;
+    echo "> state: ", $promise->getState(), PHP_EOL;
+}
+
+info_promise();
+
+$promise->then(function($result) {
+    echo "then (${result})", PHP_EOL;
+    info_promise();
+})->catch(function($error) {
+    echo "catch (${error})", PHP_EOL;
+    info_promise();
+})->finally(function() {
+    echo "finally", PHP_EOL;
+    info_promise();
 });
 
-echo "Processamento...\r\n";
-for ($i = 0; $i < 10; $i++) {
-    echo "Loop $i\r\n";
+echo "Processing...", PHP_EOL;
+for ($counter = 0; $counter < 10; $counter++) {
+    echo "Counter: ${counter}", PHP_EOL;
     usleep(200000);
 }
 
 // EN-US: Include after timed calls
 // PT-BR: Incluir após chamadas programadas (agendadas)
 $count = workWait(function() { usleep(1); });
-echo "workRun foi executado $count vezes\r\n";
+echo "workRun has been run ${count} times", PHP_EOL;
 
-echo "Fim\r\n";
+echo "End", PHP_EOL;
 ```

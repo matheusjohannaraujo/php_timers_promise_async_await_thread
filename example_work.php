@@ -5,32 +5,36 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-26
+	Date: 2021-08-29
 */
 
+// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
+// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
 require_once "work.php";
 
-echo "Inicio\r\n";
+echo "Start", PHP_EOL;
 
-$i = 1;
+$counter = 1;
 
-$uid = setInterval(function() use (&$i) {
-    echo "Contador " . $i++ . "\r\n";
+$uid = setInterval(function() use (&$counter) {
+    echo "Counter: ", $counter++, PHP_EOL;
 }, 100);
 
 setTimeout(function() {
-    echo "Metade\r\n";
+    echo "Half of the increments", PHP_EOL;
 }, 1000);
 
 setTimeout(function() use ($uid) {
-    echo "Para Contador\r\n";
+    echo "Stopping the counter", PHP_EOL;
     clearInterval($uid);
 }, 2000);
 
-echo "Processamento...\r\n";
+echo "Processing...", PHP_EOL;
 
+// EN-US: Include after timed calls
+// PT-BR: Incluir após chamadas programadas (agendadas)
 $count = workWait(function() { usleep(1); });
-echo "workRun foi executado $count vezes\r\n";
+echo "workRun has been run ${count} times", PHP_EOL;
 
-echo "Fim\r\n";
+echo "End", PHP_EOL;

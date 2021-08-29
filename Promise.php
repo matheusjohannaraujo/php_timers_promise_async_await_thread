@@ -5,41 +5,44 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-26
+	Date: 2021-08-29
 */
 
 class Promise {
-
-    private $val = null;
-    private $type = null;
+    
     private $fun = [];
     private $self = null;
+    private $value = null;
+    private $state = "pending";
+    private $monitor = "undefined";
 
-    public function __construct(callable $main) {
-        $this->fun["resolve"] = function($val = null) {
-            if ($this->type !== null) {
+    public function __construct(callable $main = null)
+    {
+        $this->fun["resolved"] = function($value = null) {
+            if ($this->state !== "pending") {
                 return;
             }
-            $this->type = "resolve";
-            $this->val = $val;
+            $this->state = "resolved";
+            $this->value = $value;
         };
-        $this->fun["rejected"] = function($val = null) {
-            if ($this->type !== null) {
+        $this->fun["rejected"] = function($value = null) {
+            if ($this->state !== "pending") {
                 return;
             }
-            $this->type = "rejected";
-            $this->val = $val;
+            $this->state = "rejected";
+            $this->value = $value;
         };
         $this->fun["then"] = function() {};
         $this->fun["catch"] = function() {};
         $this->fun["finally"] = function() {};
-        $main($this->fun["resolve"], $this->fun["rejected"]);
-        $this->self = $this;
+        if ($main !== null) {
+            $main($this->fun["resolved"], $this->fun["rejected"]);
+        }
+        $this->self = &$this;
     }
 
-    private $interval = null;
-
-    public function then(callable $then, callable $catch = null, callable $finally = null) {
+    public function then(callable $then, callable $catch = null, callable $finally = null)
+    {
         $this->fun["then"] = &$then;
         if ($catch !== null) {
             $this->fun["catch"] = &$catch;
@@ -51,43 +54,79 @@ class Promise {
         return $this->self;
     }
 
-    public function catch(callable $catch) {
+    public function catch(callable $catch)
+    {
         $this->fun["catch"] = &$catch;
         $this->run();
         return $this->self;
     }
 
-    public function finally(callable $finally) {
+    public function finally(callable $finally)
+    {
         $this->fun["finally"] = &$finally;
         $this->run();
         return $this->self;
     }
 
-    private function run() {
-        if ($this->interval === null) {
-            $v = &$this->self;
-            $this->interval = setInterval(function() use (&$v) {
-                if ($v->type !== null) {
-                    clearInterval($v->interval);
-                    $v->interval = "closed";
-                    $v->run();
+    private function run()
+    {
+        if ($this->monitor == "undefined") {
+            $self = &$this->self;
+            $this->monitor = setInterval(function() use (&$self) {
+                if ($self->state !== "pending") {
+                    clearInterval($self->monitor);
+                    $self->monitor = "settled";
+                    $self->run();
                 }
             }, 50);
-        }
-        if ($this->interval == "closed") {
-            if ($this->type == "resolve") {
-                $this->fun["then"]($this->val);
-                $this->type = "fulfilled";
+        } else if ($this->monitor == "settled") {
+            if ($this->state == "resolved") {
+                $this->fun["then"]($this->value);
+                $this->state = "fulfilled";
             }
-            if ($this->type == "rejected") {
-                $this->fun["catch"]($this->val);
-                $this->type = "fulfilled";
+            if ($this->state == "rejected") {
+                $this->fun["catch"]($this->value);
             }
-            if ($this->type == "fulfilled") {
+            if ($this->state == "fulfilled" || $this->state == "rejected") {
                 $this->fun["finally"]();
             }
         }        
         return $this->self;
+    }
+
+    public function resolve($value = null)
+    {
+        $this->fun["resolved"]($value);
+    }
+
+    public function reject($value = null)
+    {
+        $this->fun["rejected"]($value);
+    }
+
+    public function cancel() :bool
+    {
+        $id = $this->monitor;
+        $this->monitor = "canceled";
+        if (clearInterval($id)) {
+            return true;
+        }
+        return false;
+    }
+
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function getState() :string
+    {
+        return $this->state;
+    }
+
+    public function getMonitor() :string
+    {
+        return $this->monitor;
     }
 
 }

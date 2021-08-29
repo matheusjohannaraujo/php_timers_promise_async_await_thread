@@ -5,11 +5,8 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2020-12-26
-*/
-
-/*
-
+	Date: 2021-08-29
+----------------------------------------------------------------------------------------------------
 EN-US: Include at the beginning of the first file to be interpreted, do not use TICK on a WEB server
 PT-BR: Incluir no início do primeiro arquivo a ser interpretado, não use o TICK em servidor WEB
 
