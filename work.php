@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2021-08-29
+	Date: 2021-09-04
 ----------------------------------------------------------------------------------------------------
 EN-US: Include at the beginning of the first file to be interpreted, do not use TICK on a WEB server
 PT-BR: Incluir no início do primeiro arquivo a ser interpretado, não use o TICK em servidor WEB
@@ -60,11 +60,13 @@ function workRun() :bool
     return count($GL_WORK) > 0;
 }
 
-function workWait(callable $call) :int
+function workWait(callable $call = null) :int
 {
     global $GL_TICK_EXIST;
     global $GL_WORK_RUN_COUNT;
-    if ($GL_TICK_EXIST) {
+    if ($call === null) {
+        $call = function() { usleep(1); };
+    } else if ($GL_TICK_EXIST) {
         return workWaitTick($call);
     }
     while (workRun()) { $call(); }
