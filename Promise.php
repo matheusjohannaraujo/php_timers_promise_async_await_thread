@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2021-08-29
+	Date: 2021-09-06
 */
 
 class Promise {
@@ -68,7 +68,7 @@ class Promise {
         return $this->self;
     }
 
-    private function run()
+    public function run()
     {
         if ($this->monitor == "undefined") {
             $self = &$this->self;
