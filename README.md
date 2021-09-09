@@ -1,16 +1,16 @@
 
-# [Work e Promise](https://github.com/matheusjohannaraujo/php_work_promise)
+## [Timers, Promise, Async, Await e Thread (RPC Thread Parallel)](https://github.com/matheusjohannaraujo/php_timers_promise_async_await_thread)
+
+### [Guia de uso no YouTube](https://www.youtube.com/watch?v=sBMF3HlWElQ)
 
 ```php
 const DEVELOPER_INFO = [
     "autor" => "Matheus Johann Araújo",
     "country" => "Brasil",
     "state" => "Pernambuco",
-    "date" => "2021-09-06"
+    "date" => "2021-09-09"
 ];
 ```
-
-## [YouTube - Guia de uso da biblioteca <em>Work e Promise</em> na linguagem PHP](https://www.youtube.com/watch?v=sBMF3HlWElQ)
 
 * O termo `callback` significa função passada como parâmetro de uma função, que será chamado por uma função. Em `PHP` os `callbacks` são do tipo `callable` que significa chamável;
 
@@ -18,9 +18,9 @@ const DEVELOPER_INFO = [
 
 * Os `callback` normalmente são funções não nomeadas (funções anônimas ou de seta) que são passadas por parâmetro, mas nada impede que uma função nomeada seja passada como parâmetro!
 
-### A biblioteca <em>Work</em> serve para definir funções (callbacks) que devem ser executadas após um determinado tempo, assim como é na linguagem <em>JavaScript</em>
+### A biblioteca <em>Timers</em> serve para definir funções (callbacks) que devem ser executadas após um determinado tempo, assim como é na linguagem <em>JavaScript</em>
 
-#### <em>Work</em> implementa as funções <em>setInterval, setTimeout, clearInterval e clearTimeout:</em>
+#### <em>Timers</em> implementa as funções <em>setInterval, setTimeout, clearInterval e clearTimeout:</em>
 
 * `setInterval(callback, milliseconds)` executa a chamada da função callback no tempo informado de modo infinito. A função retorna um `UID` que pode ser utilizado na função `clearInterval` para remover o `setInterval` da fila de execução;
 
@@ -30,7 +30,7 @@ const DEVELOPER_INFO = [
 
 * `clearTimeout(UID)` finaliza a futura execução do `setTimeout` que possui o `UID` informado. A função retorna `true` (finalizou) ou `false` (não finalizou ou não encontrou a tarefa agendada).
 
-#### Usando a biblioteca Work:
+#### Usando a biblioteca Timers:
 
 ```php
 <?php
@@ -38,7 +38,8 @@ const DEVELOPER_INFO = [
 // EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
 // PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
-require_once "work.php";
+
+require_once "lib/code.php";
 
 echo "Start", PHP_EOL;
 
@@ -67,7 +68,7 @@ echo "workRun has been run ${count} times", PHP_EOL;
 echo "End", PHP_EOL;
 ```
 
-#### Observação: A biblioteca Work permite escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona. É compatível com PHP 7.2 em diante.
+#### Observação: A biblioteca Timers permite escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona. É compatível com PHP 7.2 em diante.
 
 #### <em>Promise</em> é uma biblioteca que implementa o modelo de funcionamento da <em>Promise</em> em <em>JavaScript</em>.
 
@@ -82,19 +83,11 @@ echo "End", PHP_EOL;
 ```php
 <?php
 
-/*
-	GitHub: https://github.com/matheusjohannaraujo/php_work_promise
-	Country: Brasil
-	State: Pernambuco
-	Developer: Matheus Johann Araujo
-	Date: 2021-08-28
-*/
-
 // EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
 // PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
-require_once "work.php";
-require_once "Promise.php";
+
+require_once "lib/code.php";
 
 echo "Start", PHP_EOL;
 

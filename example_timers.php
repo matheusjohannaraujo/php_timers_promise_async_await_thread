@@ -1,17 +1,10 @@
 <?php
 
-/*
-	GitHub: https://github.com/matheusjohannaraujo/php_work_promise
-	Country: Brasil
-	State: Pernambuco
-	Developer: Matheus Johann Araujo
-	Date: 2021-08-29
-*/
-
 // EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
 // PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
-require_once "work.php";
+
+require_once "lib/code.php";
 
 echo "Start", PHP_EOL;
 
