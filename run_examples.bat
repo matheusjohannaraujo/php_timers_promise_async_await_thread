@@ -39,4 +39,4 @@ echo -----------------------------
 echo.
 php example_thread.php
 echo.
-timeout /t 60
+pause

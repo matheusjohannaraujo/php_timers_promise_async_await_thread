@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2021-09-09
+	Date: 2021-09-10
 --------------------------------------------------------------------------------------------------------
 EN-US: Include at the beginning of the first file to be interpreted, do not use TICK on a WEB server
 PT-BR: Incluir no início do primeiro arquivo a ser interpretado, não use o TICK em servidor WEB
@@ -72,7 +72,7 @@ function thread_parallel(
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
             // Tempo em que o solicitante espera por uma resposta
             curl_setopt($ch, CURLOPT_TIMEOUT_MS, 500);
-            $response = base64_decode(curl_exec($ch));
+            $response = json_decode(base64_decode(curl_exec($ch)), true);
             $script[$key] = [
                 "response" => empty($response) ? null : $response,
                 "await" => false,
@@ -100,8 +100,9 @@ function thread_parallel(
         }
         $result_curl = function () use (&$mch, &$script, &$aes, &$info_request) {
             foreach ($script as $key => $ch) {
+                $response = json_decode(base64_decode(curl_multi_getcontent($ch)), true);// Acessa a resposta de cada requisição
                 $script[$key] = [
-                    "response" => base64_decode(curl_multi_getcontent($ch)),// Acessa a resposta de cada requisição
+                    "response" => $response,
                     "await" => true,
                     "error" => curl_errno($ch) ? curl_error($ch) : null,
                     "info" => $info_request ? curl_getinfo($ch) : null
@@ -172,15 +173,15 @@ function rpc_thread_parallel(string $script)
         } else if (empty($printed) && !empty($returned)) {
             $script = $returned;
         } else {
-            $script = json_encode([
+            $script = [
                 "printed" => &$printed,
                 "returned" => &$returned
-            ]);
+            ];
         }
     } else {
         $script = "";
     }
-    return $script;
+    return json_encode($script);
 }
 
 /**
@@ -193,18 +194,19 @@ function rpc_thread_parallel(string $script)
  *
  * @param callable $call
  * @param bool $return [optional, default = true]
- * @return Promise|array
+ * @return Promise
  */
 function async(callable $call, bool $return = true)
 {
     $parallel = thread_parallel($call, $return, $return);
-    if (!$return) {
-        return $parallel;
-    }
-    return new Promise(function($resolve) use (&$parallel) {
-        $parallel->then(function($val) use ($resolve) {
-            $resolve($val["response"]);
-        });
+    return new Promise(function($resolve) use (&$parallel, $return) {
+        if (!$return) {
+            $resolve($parallel["response"]);
+        } else {
+            $parallel->then(function($val) use ($resolve) {
+                $resolve($val["response"]);
+            });
+        }
     });
 }
 
