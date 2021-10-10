@@ -1,5 +1,5 @@
 
-## [Timers, Promise, Async, Await e Thread (RPC Thread Parallel)](https://github.com/matheusjohannaraujo/php_timers_promise_async_await_thread)
+## [Timers, Promise, Async, Await e Thread Parallel (RPC)](https://github.com/matheusjohannaraujo/php_timers_promise_async_await_thread)
 
 ### [Guia completo de uso no YouTube](https://www.youtube.com/watch?v=K0DkE2kb06c)
 
