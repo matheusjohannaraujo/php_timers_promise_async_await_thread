@@ -1,14 +1,14 @@
 
 ## [Timers, Promise, Async, Await e Thread Parallel (RPC)](https://github.com/matheusjohannaraujo/php_timers_promise_async_await_thread)
 
-### [Guia completo de uso no YouTube](https://www.youtube.com/watch?v=K0DkE2kb06c)
+### [Guia completo de uso no YouTube](https://www.youtube.com/watch?v=ZFbOnbJQN3U)
 
 ```php
 const DEVELOPER_INFO = [
     "autor" => "Matheus Johann Araújo",
     "country" => "Brasil",
     "state" => "Pernambuco",
-    "date" => "2021-09-10"
+    "date" => "2022-02-02"
 ];
 ```
 
