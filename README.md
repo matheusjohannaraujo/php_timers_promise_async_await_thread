@@ -12,6 +12,8 @@ const DEVELOPER_INFO = [
 ];
 ```
 
+* Compatibilidade comprovada do PHP 7.2 ao 8.0.15
+
 * O termo `callback` significa função passada como parâmetro de uma função, que será chamado por uma função. Em `PHP` os `callbacks` são do tipo `callable` que significa chamável;
 
 * A classe chamada `Closure` é responsável por representar funções anônimas e `arrow functions` (funções de seta);
@@ -68,7 +70,7 @@ echo "workRun has been run ${count} times", PHP_EOL;
 echo "End", PHP_EOL;
 ```
 
-#### Observação: A biblioteca Timers permite escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona. É compatível com PHP 7.2 em diante.
+#### Observação: A biblioteca Timers permite escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona.
 
 #### <em>Promise</em> é uma biblioteca que implementa o modelo de funcionamento da <em>Promise</em> em <em>JavaScript</em>.
 
