@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit74dcd96d8dead0f0924ad952897a64ae
+class ComposerStaticInitceff1d1a8c2618c9b3be60dd67d640e6
 {
     public static $files = array (
         '538ca81a9a966a6716601ecf48f4eaef' => __DIR__ . '/..' . '/opis/closure/functions.php',
@@ -15,12 +15,20 @@ class ComposerStaticInit74dcd96d8dead0f0924ad952897a64ae
         array (
             'Opis\\Closure\\' => 13,
         ),
+        'L' => 
+        array (
+            'Laravel\\SerializableClosure\\' => 28,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'Opis\\Closure\\' => 
         array (
             0 => __DIR__ . '/..' . '/opis/closure/src',
+        ),
+        'Laravel\\SerializableClosure\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/laravel/serializable-closure/src',
         ),
     );
 
@@ -31,9 +39,9 @@ class ComposerStaticInit74dcd96d8dead0f0924ad952897a64ae
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit74dcd96d8dead0f0924ad952897a64ae::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit74dcd96d8dead0f0924ad952897a64ae::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit74dcd96d8dead0f0924ad952897a64ae::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitceff1d1a8c2618c9b3be60dd67d640e6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitceff1d1a8c2618c9b3be60dd67d640e6::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInitceff1d1a8c2618c9b3be60dd67d640e6::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -3,16 +3,16 @@
 
 ### [Guia completo de uso no YouTube](https://www.youtube.com/watch?v=ZFbOnbJQN3U)
 
+### PHP ^7.2 || ^8.0
+
 ```php
 const DEVELOPER_INFO = [
     "autor" => "Matheus Johann Araújo",
     "country" => "Brasil",
     "state" => "Pernambuco",
-    "date" => "2022-02-02"
+    "date" => "2022-03-12"
 ];
 ```
-
-* Compatibilidade comprovada do PHP 7.2 ao 8.0.15
 
 * O termo `callback` significa função passada como parâmetro de uma função, que será chamado por uma função. Em `PHP` os `callbacks` são do tipo `callable` que significa chamável;
 
