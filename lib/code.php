@@ -226,6 +226,7 @@ function async(callable $call, bool $return = true)
                 $resolve($val["response"]);
             });
         }
+        workRun();
     });
 }
 
