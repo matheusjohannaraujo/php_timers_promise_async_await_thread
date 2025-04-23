@@ -153,4 +153,9 @@ class Promise
                 });
         });
     }
+
+    public static function workWait(?callable $call = null): int
+    {
+        return Timers::workWait($call);
+    }
 }

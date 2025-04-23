@@ -162,4 +162,9 @@ class WebThread
             !empty($script) ? self::rpcThreadParallel(base64_decode($script)) : ""
         );
     }
+
+    public static function workWait(?callable $call = null): int
+    {
+        return Timers::workWait($call);
+    }
 }

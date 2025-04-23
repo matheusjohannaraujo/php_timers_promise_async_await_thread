@@ -46,7 +46,7 @@ for ($counter = 0; $counter < 10; $counter++) {
 
 // EN-US: Include after timed calls
 // PT-BR: Incluir após chamadas programadas (agendadas)
-$count = Timers::workWait(function () {
+$count = Promise::workWait(function () {
     usleep(1);
 });
 echo "workRun has been run " . $count . " times", PHP_EOL;

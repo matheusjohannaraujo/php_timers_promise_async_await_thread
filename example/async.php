@@ -4,10 +4,11 @@
 // PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
 
-use MJohann\Packlib\Timers;
 use MJohann\Packlib\WebThread;
 
 require_once "../vendor/autoload.php";
+
+WebThread::init("http://localhost/rpc.php");
 
 echo "Start", PHP_EOL;
 
@@ -24,7 +25,7 @@ for ($i = 1; $i <= 25; $i++) {
 
 // EN-US: Include after timed calls
 // PT-BR: Incluir após chamadas programadas (agendadas)
-$count = Timers::workWait(function () {
+$count = WebThread::workWait(function () {
     usleep(1);
 });
 echo "workRun has been run " . $count . " times", PHP_EOL;

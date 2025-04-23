@@ -3,7 +3,7 @@
 
 ### [Guia completo de uso no YouTube](https://www.youtube.com/watch?v=ZFbOnbJQN3U)
 
-### PHP ^7.2 || ^8.0
+### PHP ^8.0
 
 ```php
 const DEVELOPER_INFO = [
