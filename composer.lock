@@ -1,0 +1,189 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "f8819e045da3c337d921d9fa63e5d2b0",
+    "packages": [
+        {
+            "name": "laravel/serializable-closure",
+            "version": "v2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/serializable-closure.git",
+                "reference": "b352cf0534aa1ae6b4d825d1e762e35d43f8a841"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/b352cf0534aa1ae6b4d825d1e762e35d43f8a841",
+                "reference": "b352cf0534aa1ae6b4d825d1e762e35d43f8a841",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "nesbot/carbon": "^2.67|^3.0",
+                "pestphp/pest": "^2.36|^3.0",
+                "phpstan/phpstan": "^2.0",
+                "symfony/var-dumper": "^6.2.0|^7.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\SerializableClosure\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                },
+                {
+                    "name": "Nuno Maduro",
+                    "email": "nuno@laravel.com"
+                }
+            ],
+            "description": "Laravel Serializable Closure provides an easy and secure way to serialize closures in PHP.",
+            "keywords": [
+                "closure",
+                "laravel",
+                "serializable"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/serializable-closure/issues",
+                "source": "https://github.com/laravel/serializable-closure"
+            },
+            "time": "2025-03-19T13:51:03+00:00"
+        },
+        {
+            "name": "mjohann/call-morph",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matheusjohannaraujo/call-morph.git",
+                "reference": "8e2218c9211c1321633df39ce9e71b539a2eefa4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matheusjohannaraujo/call-morph/zipball/8e2218c9211c1321633df39ce9e71b539a2eefa4",
+                "reference": "8e2218c9211c1321633df39ce9e71b539a2eefa4",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/serializable-closure": "^2.0",
+                "opis/closure": "^3.6",
+                "php": "^7.0|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MJohann\\Packlib\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "M. Johann",
+                    "email": "matheusjohannaraujo+mjohannpacklib@gmail.com"
+                }
+            ],
+            "description": "CallMorph is a PHP class that simplifies and secures the serialization of anonymous functions by automatically selecting the appropriate library based on the PHP version, with support for a secret key when using Laravel's Serializable Closures.",
+            "support": {
+                "issues": "https://github.com/matheusjohannaraujo/call-morph/issues",
+                "source": "https://github.com/matheusjohannaraujo/call-morph/tree/v1.1.0"
+            },
+            "time": "2025-04-22T23:00:21+00:00"
+        },
+        {
+            "name": "opis/closure",
+            "version": "3.6.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opis/closure.git",
+                "reference": "3d81e4309d2a927abbe66df935f4bb60082805ad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opis/closure/zipball/3d81e4309d2a927abbe66df935f4bb60082805ad",
+                "reference": "3d81e4309d2a927abbe66df935f4bb60082805ad",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 || ^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "jeremeamia/superclosure": "^2.0",
+                "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.6.x-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "functions.php"
+                ],
+                "psr-4": {
+                    "Opis\\Closure\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marius Sarca",
+                    "email": "marius.sarca@gmail.com"
+                },
+                {
+                    "name": "Sorin Sarca",
+                    "email": "sarca_sorin@hotmail.com"
+                }
+            ],
+            "description": "A library that can be used to serialize closures (anonymous functions) and arbitrary objects.",
+            "homepage": "https://opis.io/closure",
+            "keywords": [
+                "anonymous functions",
+                "closure",
+                "function",
+                "serializable",
+                "serialization",
+                "serialize"
+            ],
+            "support": {
+                "issues": "https://github.com/opis/closure/issues",
+                "source": "https://github.com/opis/closure/tree/3.6.3"
+            },
+            "time": "2022-01-27T09:35:39+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {
+        "php": "^7.0|^8.0"
+    },
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
+}

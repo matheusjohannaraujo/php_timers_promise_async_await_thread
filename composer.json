@@ -1,0 +1,21 @@
+{
+    "name": "mjohann/zynq",
+    "description": "Zynq",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "M. Johann",
+            "email": "matheusjohannaraujo+mjohannpacklib@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "mjohann/call-morph": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "MJohann\\Packlib\\": "src/"
+        }
+    }
+}
