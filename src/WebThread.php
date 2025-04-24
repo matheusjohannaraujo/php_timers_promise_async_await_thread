@@ -2,16 +2,19 @@
 
 namespace MJohann\Packlib;
 
-use MJohann\Packlib\Facades\CallMorph;
+use MJohann\Packlib\CallMorph;
+use MJohann\Packlib\SimpleAES256;
 
 class WebThread
 {
 
     private static string $LOCATION_THREAD_HTTP = "http://localhost/rpc.php";
+    private static string $SECRET_KEY = "secret";
 
-    public static function init(string $LOCATION_THREAD_HTTP)
+    public static function init(string $LOCATION_THREAD_HTTP, string $SECRET_KEY = "secret")
     {
         self::$LOCATION_THREAD_HTTP = $LOCATION_THREAD_HTTP;
+        self::$SECRET_KEY = $SECRET_KEY;
     }
 
     public static function threadParallel(
@@ -30,10 +33,10 @@ class WebThread
         }
 
         $threadHttp ??= self::$LOCATION_THREAD_HTTP;
-        CallMorph::init("secret");
+        $callMorph = new CallMorph(self::$SECRET_KEY);
 
         foreach ($script as $key => $value) {
-            $script[$key] = CallMorph::serialize($value);
+            $script[$key] = self::textProtect($callMorph->serialize($value));
         }
 
         if (!$waitResponse && !$returnPromise) {
@@ -42,14 +45,14 @@ class WebThread
                 curl_setopt_array($ch, [
                     CURLOPT_URL => $threadHttp,
                     CURLOPT_RETURNTRANSFER => true,
-                    CURLOPT_POSTFIELDS => ['script' => base64_encode($value)],
+                    CURLOPT_POSTFIELDS => ['script' => $value],
                     CURLOPT_FOLLOWLOCATION => true,
                     CURLOPT_FRESH_CONNECT => true,
                     CURLOPT_CONNECTTIMEOUT => 0,
-                    CURLOPT_TIMEOUT_MS => 500
+                    CURLOPT_TIMEOUT_MS => 2000 // Wait 2s
                 ]);
 
-                $response = json_decode(base64_decode(curl_exec($ch)), true);
+                $response = json_decode(self::textUnprotect(curl_exec($ch)), true);
                 $script[$key] = [
                     "response" => $response ?: null,
                     "await" => false,
@@ -67,14 +70,14 @@ class WebThread
             curl_setopt_array($script[$key], [
                 CURLOPT_URL => $threadHttp,
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POSTFIELDS => ['script' => base64_encode($value)],
+                CURLOPT_POSTFIELDS => ['script' => $value],
             ]);
             curl_multi_add_handle($mch, $script[$key]);
         }
 
         $resultCurl = function () use (&$mch, &$script, $infoRequest) {
             foreach ($script as $key => $ch) {
-                $response = json_decode(base64_decode(curl_multi_getcontent($ch)), true);
+                $response = json_decode(self::textUnprotect(curl_multi_getcontent($ch)), true);
                 $script[$key] = [
                     "response" => $response,
                     "await" => true,
@@ -113,24 +116,51 @@ class WebThread
         return $script;
     }
 
-    public static function rpcThreadParallel(string $script): string
+    private static function textProtect(string $text)
     {
-        if (empty($script)) return json_encode("");
+        $aes = new SimpleAES256(self::$SECRET_KEY);
+        $text = $aes->encrypt_cbc($text);
+        $text = base64_encode($text);
+        return $text;
+    }
 
-        ob_start();
-        $returned = null;
-        try {
-            CallMorph::init("secret");
-            $returned = CallMorph::unserialize($script)();
-        } catch (\Throwable $th) {
-            var_dump($th);
+    private static function textUnprotect(string $text)
+    {
+        $aes = new SimpleAES256(self::$SECRET_KEY);
+        $text = base64_decode($text);
+        $text = $aes->decrypt_cbc($text);
+        return $text;
+    }
+
+    private static function rpcThreadParallel(string $script): string
+    {
+        $script = self::textUnprotect($script);
+        if (!empty($script)) {
+            ob_start();
+            $returned = null;
+            try {
+                $callMorph = new CallMorph(self::$SECRET_KEY);
+                $returned = $callMorph->unserialize($script)();
+            } catch (\Throwable $th) {
+                var_dump($th);
+            }
+            $printed = ob_get_clean();
+            if (empty($printed) && empty($returned)) {
+                $script = "";
+            } else if (!empty($printed) && empty($returned)) {
+                $script = $printed;
+            } else if (empty($printed) && !empty($returned)) {
+                $script = $returned;
+            } else {
+                $script = [
+                    "printed" => &$printed,
+                    "returned" => &$returned
+                ];
+            }
+        } else {
+            $script = "";
         }
-        $printed = ob_get_clean();
-
-        return json_encode(
-            empty($printed) && empty($returned) ? "" : (!empty($printed) && empty($returned) ? $printed : (empty($printed) && !empty($returned) ? $returned :
-                ["printed" => $printed, "returned" => $returned]))
-        );
+        return self::textProtect(json_encode($script));
     }
 
     public static function async(callable $call, bool $return = true)
@@ -158,9 +188,7 @@ class WebThread
 
     public static function rpcProcess(string $script): string
     {
-        return base64_encode(
-            !empty($script) ? self::rpcThreadParallel(base64_decode($script)) : ""
-        );
+        return self::rpcThreadParallel($script);
     }
 
     public static function workWait(?callable $call = null): int

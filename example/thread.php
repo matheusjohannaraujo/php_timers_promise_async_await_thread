@@ -1,57 +1,62 @@
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+// Use TICK to catch system signals at every tick (use sparingly on web servers)
 declare(ticks=1);
 
 use MJohann\Packlib\WebThread;
 
 require_once "../vendor/autoload.php";
 
-WebThread::init("http://localhost/rpc.php");
+// Initialize WebThread with the RPC endpoint and secret key
+WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
+// Random sleep time between 0 and 2 seconds
 $sleep = rand(0, 2);
+echo "Sleep: {$sleep}s", PHP_EOL;
 
-echo "Sleep: ", $sleep, "s", PHP_EOL;
-
-// THREAD SYNC (Wait for the return of the execution of the passed function)
-$sync = WebThread::threadParallel(function () use ($sleep) {
+// === SYNC EXECUTION ===
+// Waits for the return of the function executed in parallel
+$responseSync = WebThread::threadParallel(function () use ($sleep) {
 	sleep($sleep);
 	echo "Ok 1";
 });
 
-var_export($sync["response"]);
-
+echo "Response (sync): ";
+var_export($responseSync["response"]);
 echo PHP_EOL;
 
-// THREAD ASYNC (If the callback execution takes less than 500ms, the execution result is returned,
-// otherwise the script continues to run without the sender receiving a return response)
-$async = WebThread::threadParallel(function () use ($sleep) {
+// === ASYNC EXECUTION ===
+// If execution takes less than 2000ms, the result is returned;
+// otherwise, the script continues and no result is returned
+$responseAsync = WebThread::threadParallel(function () use ($sleep) {
 	sleep($sleep);
 	echo "Ok 2";
 }, false);
 
-var_export($async["response"]);
-
+echo "Response (async): ";
+var_export($responseAsync["response"]);
 echo PHP_EOL;
 
-// THREAD SYNC (Does not wait for the return of the execution of the passed function)
+// === PROMISE EXECUTION ===
+// Sends a parallel task as a promise and waits manually for the result
 $promise = WebThread::threadParallel(function () use ($sleep) {
 	sleep($sleep);
 	echo "Ok 3";
 }, true, true);
 
-var_export(WebThread::await($promise)["response"]);
+$responsePromise = WebThread::await($promise);
 
+echo "Response (promise): ";
+var_export($responsePromise["response"]);
 echo PHP_EOL;
 
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
+// === TIMED WORK ===
+// Executes a lightweight timed task and returns how many times it was run
 $count = WebThread::workWait(function () {
 	usleep(1);
 });
-echo "workRun has been run " . $count . " times", PHP_EOL;
 
+echo "workWait executed {$count} times", PHP_EOL;
 echo "End", PHP_EOL;

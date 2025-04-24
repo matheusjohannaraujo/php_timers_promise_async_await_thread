@@ -1,39 +1,41 @@
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+// Allows signal handling during script execution (use sparingly on web servers)
 declare(ticks=1);
 
 use MJohann\Packlib\WebThread;
 
 require_once "../vendor/autoload.php";
 
-WebThread::init("http://localhost/rpc.php");
+// Initialize WebThread with RPC endpoint and secret key
+WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-$max_sleep = 5;
+$maxSleepTime = 2;
+$totalTasks = 15;
+$asyncTasks = [];
 
-$asyncs = [];
-
-for ($i = 1; $i <= 25; $i++) {
-    $asyncs[] = WebThread::async(function () use ($max_sleep) {
-        echo $sleep = rand(2, $max_sleep);
-        sleep($sleep);
+// === Launch asynchronous tasks ===
+for ($taskNumber = 1; $taskNumber <= $totalTasks; $taskNumber++) {
+    $asyncTasks[] = WebThread::async(function () use ($maxSleepTime) {
+        $sleepTime = rand(2, $maxSleepTime);
+        sleep($sleepTime);
+        return $sleepTime;
     });
 }
 
-foreach ($asyncs as $key => $value) {
-    $i = $key + 1;
-    $val = WebThread::await($value);
-    echo "The async ", $i, " function took ", $val, " seconds to run", PHP_EOL;
+// === Await and print results of async tasks ===
+foreach ($asyncTasks as $index => $promise) {
+    $taskNumber = $index + 1;
+    $sleepTime = WebThread::await($promise);
+    echo "Await in Async task {$taskNumber} finished in {$sleepTime} seconds", PHP_EOL;
 }
 
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
-$count = WebThread::workWait(function () {
-    usleep(1);
+// === Keep the script alive for pending executions ===
+$executionCount = WebThread::workWait(function () {
+    usleep(1); // Yield CPU briefly to avoid 100% usage
 });
-echo "workRun has been run " . $count . " times", PHP_EOL;
 
+echo "workWait executed {$executionCount} times", PHP_EOL;
 echo "End", PHP_EOL;

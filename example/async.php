@@ -1,33 +1,38 @@
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+// Enables signal handling between execution points (use sparingly on web servers)
 declare(ticks=1);
 
 use MJohann\Packlib\WebThread;
 
 require_once "../vendor/autoload.php";
 
-WebThread::init("http://localhost/rpc.php");
+// Initialize WebThread with the RPC endpoint and secret key
+WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-$max_sleep = 5;
+$maxSleepTime = 2;
+$totalTasks = 15;
 
-for ($i = 1; $i <= 25; $i++) {
-    WebThread::async(function () use ($max_sleep) {
-        echo $sleep = rand(2, $max_sleep);
-        sleep($sleep);
-    })->then(function ($val) use ($i) {
-        echo "The async ", $i, " function took ", $val, " seconds to run", PHP_EOL;
-    });
+// === Launch 25 asynchronous tasks ===
+for ($taskIndex = 1; $taskIndex <= $totalTasks; $taskIndex++) {
+    WebThread::async(function () use ($maxSleepTime) {
+        // Random delay between 1 and $maxSleepTime seconds
+        $sleepDuration = rand(1, $maxSleepTime);
+        sleep($sleepDuration);
+        return $sleepDuration;
+    })
+        ->then(function ($sleepDuration) use ($taskIndex) {
+            echo "Async task {$taskIndex} finished in {$sleepDuration} seconds", PHP_EOL;
+        });
 }
 
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
-$count = WebThread::workWait(function () {
-    usleep(1);
+// === Wait for all tasks to complete ===
+// Uses a light task to keep the script alive without heavy CPU usage
+$loopCount = WebThread::workWait(function () {
+    usleep(1); // Yield CPU briefly to avoid 100% usage
 });
-echo "workRun has been run " . $count . " times", PHP_EOL;
 
+echo "workWait executed {$loopCount} times", PHP_EOL;
 echo "End", PHP_EOL;

@@ -1,7 +1,6 @@
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+// Use TICK to allow signal handling during script execution (use sparingly on web servers)
 declare(ticks=1);
 
 use MJohann\Packlib\Promise;
@@ -9,27 +8,34 @@ use MJohann\Packlib\WebThread;
 
 require_once "../vendor/autoload.php";
 
-WebThread::init("http://localhost/rpc.php");
+// Initialize WebThread with the RPC endpoint and secret key
+WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-for ($i = 1; $i <= 25; $i++) {
+// === Create 15 asynchronous promises ===
+for ($index = 1; $index <= 15; $index++) {
     Promise::async(function ($resolve, $reject) {
-        $sleep = rand(2, 5);
-        sleep($sleep);
-        (rand(0, 1) ? $resolve : $reject)($sleep);
-    })->then(function ($val) use ($i) {
-        echo "Promise ", $i, " resolved ", $val, " seconds", PHP_EOL;
-    })->catch(function ($val) use ($i) {
-        echo "Promise ", $i, " rejected ", $val, " seconds", PHP_EOL;
-    });
+        // Simulate a delay of 0 to 2 seconds
+        $sleepTime = rand(0, 2);
+        sleep($sleepTime);
+
+        // Randomly resolve or reject the promise
+        (rand(0, 1) ? $resolve : $reject)($sleepTime);
+    })
+        ->then(function ($sleepTime) use ($index) {
+            echo "Promise {$index} resolved after {$sleepTime} seconds", PHP_EOL;
+        })
+        ->catch(function ($sleepTime) use ($index) {
+            echo "Promise {$index} rejected after {$sleepTime} seconds", PHP_EOL;
+        });
 }
 
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
-$count = Promise::workWait(function () {
-    usleep(1);
+// === Keep the script alive until all promises complete ===
+// The loop waits using a tiny task to prevent CPU spinning
+$workLoopCount = Promise::workWait(function () {
+    usleep(1); // Prevent 100% CPU usage
 });
-echo "workRun has been run " . $count . " times", PHP_EOL;
 
+echo "workWait executed {$workLoopCount} times", PHP_EOL;
 echo "End", PHP_EOL;

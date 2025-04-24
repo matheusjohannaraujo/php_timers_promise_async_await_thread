@@ -4,6 +4,12 @@ echo.
 echo C:\xampp\htdocs\php_timers_promise_async_await_thread\example
 echo.
 echo -----------------------------
+echo php -S localhost:80
+echo -----------------------------
+echo.
+start cmd /c "php -S localhost:80"
+echo.
+echo -----------------------------
 echo timers.php
 echo -----------------------------
 echo.

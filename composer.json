@@ -11,7 +11,8 @@
     ],
     "require": {
         "php": "^8.0",
-        "mjohann/call-morph": "^1.1"
+        "mjohann/call-morph": "^1.1",
+        "mjohann/simple-aes-256": "^1.1"
     },
     "autoload": {
         "psr-4": {

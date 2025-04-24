@@ -1,7 +1,6 @@
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
+// Use TICK to allow PHP to handle signal events during execution (use carefully in web servers)
 declare(ticks=1);
 
 use MJohann\Packlib\Timers;
@@ -10,28 +9,36 @@ require_once "../vendor/autoload.php";
 
 echo "Start", PHP_EOL;
 
+// === Initialize the counter ===
 $counter = 1;
 
-$id = Timers::setInterval(function () use (&$counter) {
-    echo "Counter: ", $counter++, PHP_EOL;
+// === Set up a recurring timer (interval) ===
+// This will run every 100ms, incrementing and printing the counter
+$intervalId = Timers::setInterval(function () use (&$counter) {
+    echo "Counter: {$counter}", PHP_EOL;
+    $counter++;
 }, 100);
 
+// === Schedule a timeout at 1000ms ===
+// Executes once after 1 second
 Timers::setTimeout(function () {
     echo "Half of the increments", PHP_EOL;
 }, 1000);
 
-Timers::setTimeout(function () use ($id) {
+// === Schedule another timeout at 2000ms ===
+// Stops the interval after 2 seconds
+Timers::setTimeout(function () use ($intervalId) {
     echo "Stopping the counter", PHP_EOL;
-    Timers::clearInterval($id);
+    Timers::clearInterval($intervalId);
 }, 2000);
 
 echo "Processing...", PHP_EOL;
 
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
-$count = Timers::workWait(function () {
-    usleep(1);
+// === Wait loop to keep the script alive while timers run ===
+// Repeatedly executes a tiny task while waiting
+$loopCount = Timers::workWait(function () {
+    usleep(1); // Prevents CPU from spinning at 100%
 });
-echo "workRun has been run " . $count . " times", PHP_EOL;
 
+echo "workWait was executed {$loopCount} times", PHP_EOL;
 echo "End", PHP_EOL;
