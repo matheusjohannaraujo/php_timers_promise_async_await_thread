@@ -13,45 +13,33 @@ WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-// Random sleep time between 0 and 2 seconds
-$sleep = rand(0, 2);
+// Random sleep time between 0 and 3 seconds
+$sleep = rand(0, 3);
 echo "Sleep: {$sleep}s", PHP_EOL;
 
-// === SYNC EXECUTION ===
-// Waits for the return of the function executed in parallel
-$responseSync = WebThread::threadParallel(function () use ($sleep) {
+// Sends a parallel task as a promise and waits manually for the result
+$promise = WebThread::rpcSend(function () use ($sleep) {
 	sleep($sleep);
 	echo "Ok 1";
 });
 
-echo "Response (sync): ";
-var_export($responseSync["response"]);
-echo PHP_EOL;
+$promise
+	->then(function ($result) use ($promise) {
+		echo "then: ", PHP_EOL;
+		var_dump($result);
+	})
+	->catch(function ($error) use ($promise) {
+		echo "catch: ", PHP_EOL;
+		var_dump($error);
+	})
+	->finally(function () use ($promise) {
+		echo "finally", PHP_EOL;
+	});
 
-// === ASYNC EXECUTION ===
-// If execution takes less than 2000ms, the result is returned;
-// otherwise, the script continues and no result is returned
-$responseAsync = WebThread::threadParallel(function () use ($sleep) {
-	sleep($sleep);
-	echo "Ok 2";
-}, false);
-
-echo "Response (async): ";
-var_export($responseAsync["response"]);
-echo PHP_EOL;
-
-// === PROMISE EXECUTION ===
-// Sends a parallel task as a promise and waits manually for the result
-$promise = WebThread::threadParallel(function () use ($sleep) {
-	sleep($sleep);
-	echo "Ok 3";
-}, true, true);
-
-$responsePromise = await($promise);
-
+/*$responsePromise = await($promise);
 echo "Response (promise): ";
-var_export($responsePromise["response"]);
-echo PHP_EOL;
+var_export($responsePromise);
+echo PHP_EOL;*/
 
 // === TIMED WORK ===
 // Executes a lightweight timed task and returns how many times it was run
