@@ -4,6 +4,7 @@
 declare(ticks=1);
 
 use MJohann\Packlib\WebThread;
+use function MJohann\Packlib\Functions\{async, workWait};
 
 require_once "../vendor/autoload.php";
 
@@ -13,11 +14,11 @@ WebThread::init("http://localhost/rpc.php", "secret");
 echo "Start", PHP_EOL;
 
 $maxSleepTime = 2;
-$totalTasks = 15;
+$totalTasks = 10;
 
-// === Launch 25 asynchronous tasks ===
+// === Launch 10 asynchronous tasks ===
 for ($taskIndex = 1; $taskIndex <= $totalTasks; $taskIndex++) {
-    WebThread::async(function () use ($maxSleepTime) {
+    async(function () use ($maxSleepTime) {
         // Random delay between 1 and $maxSleepTime seconds
         $sleepDuration = rand(1, $maxSleepTime);
         sleep($sleepDuration);
@@ -30,7 +31,7 @@ for ($taskIndex = 1; $taskIndex <= $totalTasks; $taskIndex++) {
 
 // === Wait for all tasks to complete ===
 // Uses a light task to keep the script alive without heavy CPU usage
-$loopCount = WebThread::workWait(function () {
+$loopCount = workWait(function () {
     usleep(1); // Yield CPU briefly to avoid 100% usage
 });
 

@@ -5,6 +5,7 @@ declare(ticks=1);
 
 use MJohann\Packlib\Promise;
 use MJohann\Packlib\WebThread;
+use function MJohann\Packlib\Functions\workWait;
 
 require_once "../vendor/autoload.php";
 
@@ -13,8 +14,8 @@ WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-// === Create 15 asynchronous promises ===
-for ($index = 1; $index <= 15; $index++) {
+// === Create 10 asynchronous promises ===
+for ($index = 1; $index <= 10; $index++) {
     Promise::async(function ($resolve, $reject) {
         // Simulate a delay of 0 to 2 seconds
         $sleepTime = rand(0, 2);
@@ -33,7 +34,7 @@ for ($index = 1; $index <= 15; $index++) {
 
 // === Keep the script alive until all promises complete ===
 // The loop waits using a tiny task to prevent CPU spinning
-$workLoopCount = Promise::workWait(function () {
+$workLoopCount = workWait(function () {
     usleep(1); // Prevent 100% CPU usage
 });
 

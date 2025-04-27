@@ -4,6 +4,7 @@
 declare(ticks=1);
 
 use MJohann\Packlib\WebThread;
+use function MJohann\Packlib\Functions\{await, workWait};
 
 require_once "../vendor/autoload.php";
 
@@ -46,7 +47,7 @@ $promise = WebThread::threadParallel(function () use ($sleep) {
 	echo "Ok 3";
 }, true, true);
 
-$responsePromise = WebThread::await($promise);
+$responsePromise = await($promise);
 
 echo "Response (promise): ";
 var_export($responsePromise["response"]);
@@ -54,7 +55,7 @@ echo PHP_EOL;
 
 // === TIMED WORK ===
 // Executes a lightweight timed task and returns how many times it was run
-$count = WebThread::workWait(function () {
+$count = workWait(function () {
 	usleep(1);
 });
 

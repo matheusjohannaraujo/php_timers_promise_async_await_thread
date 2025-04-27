@@ -5,10 +5,12 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2025-04-23
+	Date: 2025-04-27
 */
 
 namespace MJohann\Packlib;
+
+use function MJohann\Packlib\Functions\{async, clearInterval, setInterval};
 
 class Promise
 {
@@ -75,9 +77,9 @@ class Promise
     {
         if ($this->monitor == "undefined") {
             $self = &$this->self;
-            $this->monitor = Timers::setInterval(function () use (&$self) {
+            $this->monitor = setInterval(function () use (&$self) {
                 if ($self->state !== "pending") {
-                    Timers::clearInterval($self->monitor);
+                    clearInterval($self->monitor);
                     $self->monitor = "settled";
                     $self->run();
                 }
@@ -111,7 +113,7 @@ class Promise
     {
         $id = $this->monitor;
         $this->monitor = "canceled";
-        if (Timers::clearInterval($id)) {
+        if (clearInterval($id)) {
             return true;
         }
         return false;
@@ -135,7 +137,7 @@ class Promise
     public static function async(callable $main)
     {
         return new Promise(function ($resolve, $reject) use (&$main) {
-            WebThread::async(function () use (&$main) {
+            async(function () use (&$main) {
                 $res = function ($val) {
                     echo json_encode(["res", $val]);
                 };
@@ -152,10 +154,5 @@ class Promise
                     $reject($value[1]);
                 });
         });
-    }
-
-    public static function workWait(?callable $call = null): int
-    {
-        return Timers::workWait($call);
     }
 }

@@ -17,6 +17,9 @@
     "autoload": {
         "psr-4": {
             "MJohann\\Packlib\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     }
 }

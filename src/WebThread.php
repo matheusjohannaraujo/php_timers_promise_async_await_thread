@@ -163,36 +163,8 @@ class WebThread
         return self::textProtect(json_encode($script));
     }
 
-    public static function async(callable $call, bool $return = true)
-    {
-        $parallel = self::threadParallel($call, $return, $return);
-        return new Promise(function ($resolve) use (&$parallel, $return) {
-            if (!$return) {
-                $resolve($parallel["response"]);
-            } else {
-                $parallel->then(fn($val) => $resolve($val["response"]));
-            }
-            Timers::workRun();
-        });
-    }
-
-    public static function await(Promise $promise)
-    {
-        $promise->run();
-        while ($promise->getMonitor() !== "settled") {
-            Timers::workRun();
-            usleep(1);
-        }
-        return $promise->getValue();
-    }
-
     public static function rpcProcess(string $script): string
     {
         return self::rpcThreadParallel($script);
-    }
-
-    public static function workWait(?callable $call = null): int
-    {
-        return Timers::workWait($call);
     }
 }

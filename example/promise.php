@@ -3,7 +3,7 @@
 declare(ticks=1); // Use with caution on WEB servers
 
 use MJohann\Packlib\Promise;
-use MJohann\Packlib\Timers;
+use function MJohann\Packlib\Functions\{setTimeout, workWait};
 
 require_once "../vendor/autoload.php";
 
@@ -15,7 +15,7 @@ echo "Start", PHP_EOL;
 $promise = new Promise(function ($resolve, $reject) {
     $callback = rand(0, 1) ? $resolve : $reject;
 
-    Timers::setTimeout(function () use ($callback) {
+    setTimeout(function () use ($callback) {
         $callback("message");
     }, 1000);
 });
@@ -58,7 +58,7 @@ for ($i = 0; $i < 10; $i++) {
 }
 
 // Waits for all scheduled promises and timers to complete
-$executions = Promise::workWait(function () {
+$executions = workWait(function () {
     usleep(1); // small delay to allow timer execution
 });
 
