@@ -1,6 +1,6 @@
 <?php
 
-// Use TICK to allow PHP to handle signal events during execution (use carefully in web servers)
+// Allows signal handling during script execution (use sparingly on web servers)
 declare(ticks=1);
 
 use function MJohann\Packlib\Functions\{clearInterval, setInterval, setTimeout, workWait};

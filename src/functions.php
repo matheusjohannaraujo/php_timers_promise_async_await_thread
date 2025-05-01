@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2025-04-27
+	Date: 2025-05-01
 */
 
 namespace MJohann\Packlib\Functions;
@@ -57,28 +57,36 @@ if (!function_exists(__NAMESPACE__ . '\workWait')) {
 }
 
 if (!function_exists(__NAMESPACE__ . '\async')) {
-    function async(callable $call, bool $return = true)
+    function async(callable $call): Promise
     {
-        $parallel = WebThread::threadParallel($call, $return, $return);
-        return new Promise(function ($resolve) use (&$parallel, $return) {
-            if (!$return) {
-                $resolve($parallel["response"]);
-            } else {
-                $parallel->then(fn($val) => $resolve($val["response"]));
-            }
-            Timers::workRun();
-        });
+        return WebThread::rpcSend($call);
+        /*return new Promise(function ($resolve, $reject) use (&$call) {
+            
+            $promise->then(function ($resolve, $in) use (&$resolve) {
+                $resolve($result['response']);
+            });
+            $promise->catch(function ($result) use (&$reject) {
+                $reject($result['error']);
+            });
+        });*/
     }
 }
 
 if (!function_exists(__NAMESPACE__ . '\await')) {
-    function await(Promise $promise)
+    function await(Promise $promise): mixed
     {
         $promise->run();
         while ($promise->getMonitor() !== "settled") {
             Timers::workRun();
             usleep(1);
         }
-        return $promise->getValue();
+        $result = $promise->getValue();
+        if ($promise->getState() === "rejected") {
+            if (is_array($result) && isset($result['error'])) {
+                $result = $result['error'];
+            }
+            throw new \Exception(json_encode($result));
+        }
+        return $result;
     }
 }

@@ -1,5 +1,13 @@
 <?php
 
+/*
+	GitHub: https://github.com/matheusjohannaraujo/zynq
+	Country: Brasil
+	State: Pernambuco
+	Developer: Matheus Johann Araujo
+	Date: 2025-05-01
+*/
+
 namespace MJohann\Packlib;
 
 use MJohann\Packlib\CallMorph;
@@ -8,12 +16,12 @@ use MJohann\Packlib\SimpleAES256;
 class WebThread
 {
 
-    private static string $LOCATION_THREAD_HTTP = "http://localhost/rpc.php";
+    private static string $LOCATION_WEB_THREAD_HTTP = "http://localhost/rpc.php";
     private static string $SECRET_KEY = "secret";
 
-    public static function init(string $LOCATION_THREAD_HTTP, string $SECRET_KEY = "secret")
+    public static function init(string $LOCATION_WEB_THREAD_HTTP, string $SECRET_KEY = "secret")
     {
-        self::$LOCATION_THREAD_HTTP = $LOCATION_THREAD_HTTP;
+        self::$LOCATION_WEB_THREAD_HTTP = $LOCATION_WEB_THREAD_HTTP;
         self::$SECRET_KEY = $SECRET_KEY;
     }
 
@@ -33,7 +41,7 @@ class WebThread
         return $text;
     }
 
-    protected static function prepareScripts(callable|array $scripts)
+    private static function prepareScripts(callable|array $scripts)
     {
         if (is_callable($scripts)) {
             $scripts = [$scripts];
@@ -52,15 +60,20 @@ class WebThread
         return $scripts;
     }
 
-    public static function rpcSend(callable|array $scripts, int $waitResponseSeconds = 0, ?string $threadHttp = null, bool $infoRequest = false)
+    public static function rpcSend(callable|array $scripts, int $waitResponseSeconds = 0, ?string $threadHttp = null, bool $infoRequest = true): Promise|array
     {
         $isSingleCallable = is_callable($scripts);
         $scripts = self::prepareScripts($scripts);
-        $threadHttp ??= self::$LOCATION_THREAD_HTTP;
+        $threadHttp ??= self::$LOCATION_WEB_THREAD_HTTP;
 
         $handles = [];
         $promises = [];
         $mch = curl_multi_init();
+
+        // Define 600 segundos como tempo máximo de espera
+        if ($waitResponseSeconds === 0) {
+            $waitResponseSeconds = 600;
+        }
 
         // Para cada script (ou chamada de função no array de callables)
         foreach ($scripts as $payload) {
@@ -104,6 +117,7 @@ class WebThread
 
                 $response = curl_multi_getcontent($ch);
                 $error = curl_errno($ch) ? curl_error($ch) : null;
+                $info = $infoRequest ? curl_getinfo($ch) : null;
 
                 if ($response !== false) {
                     // Descriptografar e processar a resposta
@@ -111,20 +125,13 @@ class WebThread
                     $response = json_decode($decrypted, true);
                 }
 
-                // Criar resultado da requisição
-                $result = [
-                    'response' => $response,
-                    'error'    => $error,
-                    'info'     => $infoRequest ? curl_getinfo($ch) : null,
-                ];
-
                 // Resolver ou rejeitar a Promise dependendo do erro
-                if ($error) {
+                if ($error !== null) {
                     // Rejeita a Promise se erro
-                    $promises[$idPromisse]->reject($result);
+                    $promises[$idPromisse]->reject($error, $info);
                 } else {
                     // Resolve a Promise se não houver erro
-                    $promises[$idPromisse]->resolve($result);
+                    $promises[$idPromisse]->resolve($response, $info);
                 }
 
                 curl_multi_remove_handle($mch, $ch);
@@ -145,6 +152,8 @@ class WebThread
                 Timers::clearInterval($uid);
             }
         }, 50);
+
+        Timers::workRun();
 
         // Se for um único callable, retorna uma única Promise, caso contrário, retorna um array de Promises
         return $isSingleCallable ? $promises[0] : $promises;

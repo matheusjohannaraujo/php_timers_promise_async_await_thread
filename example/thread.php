@@ -9,52 +9,52 @@ use function MJohann\Packlib\Functions\{await, workWait};
 require_once "../vendor/autoload.php";
 
 // Initialize WebThread with the RPC endpoint and secret key
-WebThread::init("http://localhost/rpc.php", "secret");
+WebThread::init("http://localhost:8080/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-$p1 = WebThread::rpcSend(
+$promise1 = WebThread::rpcSend(
 	function () {
 		sleep(5);
 		echo "Ok 1";
 	}
 );
 
-$p2 = WebThread::rpcSend(
+$promise2 = WebThread::rpcSend(
 	function () {
 		sleep(3);
 		echo "Ok 2";
 	}
 );
 
-$promises = [$p1, $p2];
+$promises = [$promise1, $promise2];
 
 foreach ($promises as $key => $promise) {
 	$promise
 		->then(function ($result) {
-			echo "then: ", PHP_EOL;
-			var_export($result);
+			echo "then: ", $result, PHP_EOL;
 		})
 		->catch(function ($error) {
-			echo "catch: ", PHP_EOL;
-			var_export($error);
+			echo "catch: ", $error, PHP_EOL;
 		})
 		->finally(function () {
-			echo PHP_EOL, "finally", PHP_EOL, PHP_EOL;
+			echo "finally", PHP_EOL, PHP_EOL;
 		});
 }
 
-$p3 = WebThread::rpcSend(
+$promise3 = WebThread::rpcSend(
 	function () {
 		sleep(1);
 		echo "Ok 3";
 	}
 );
 
-$responsePromise = await($p3);
-echo "await: ", PHP_EOL;
-var_export($responsePromise);
-echo PHP_EOL, PHP_EOL;
+try {
+	$response = await($promise3);
+	echo "await: ", $response, PHP_EOL;
+} catch (\Throwable $th) {
+	echo "catch: ", $th->getMessage(), PHP_EOL;
+}
 
 // === TIMED WORK ===
 // Executes a lightweight timed task and returns how many times it was run

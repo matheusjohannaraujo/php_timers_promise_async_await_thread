@@ -1,6 +1,7 @@
 <?php
 
-declare(ticks=1); // Use with caution on WEB servers
+// Allows signal handling during script execution (use sparingly on web servers)
+declare(ticks=1);
 
 use MJohann\Packlib\Promise;
 use function MJohann\Packlib\Functions\{setTimeout, workWait};

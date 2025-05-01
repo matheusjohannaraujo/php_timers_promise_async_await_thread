@@ -5,12 +5,12 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2025-04-27
+	Date: 2025-05-01
 */
 
 namespace MJohann\Packlib;
 
-use function MJohann\Packlib\Functions\{async, clearInterval, setInterval};
+use function MJohann\Packlib\Functions\{clearInterval, setInterval};
 
 class Promise
 {
@@ -132,27 +132,5 @@ class Promise
     public function getMonitor(): string
     {
         return $this->monitor;
-    }
-
-    public static function async(callable $main)
-    {
-        return new Promise(function ($resolve, $reject) use (&$main) {
-            async(function () use (&$main) {
-                $res = function ($val) {
-                    echo json_encode(["res", $val]);
-                };
-                $rej = function ($val) {
-                    echo json_encode(["rej", $val]);
-                };
-                $main($res, $rej);
-            })
-                ->then(function ($value) use (&$resolve, &$reject) {
-                    $value = json_decode($value);
-                    if ($value[0] === "res") {
-                        return $resolve($value[1]);
-                    }
-                    $reject($value[1]);
-                });
-        });
     }
 }
