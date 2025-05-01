@@ -4,34 +4,36 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04279258a2459ab1350c827550c30920",
+    "content-hash": "f3c10baac24b1bc9b2b2e47bdeb2f738",
     "packages": [
         {
             "name": "laravel/serializable-closure",
-            "version": "v1.1.1",
+            "version": "v2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/serializable-closure.git",
-                "reference": "9e4b005daa20b0c161f3845040046dc9ddc1d74e"
+                "reference": "b352cf0534aa1ae6b4d825d1e762e35d43f8a841"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/9e4b005daa20b0c161f3845040046dc9ddc1d74e",
-                "reference": "9e4b005daa20b0c161f3845040046dc9ddc1d74e",
+                "url": "https://api.github.com/repos/laravel/serializable-closure/zipball/b352cf0534aa1ae6b4d825d1e762e35d43f8a841",
+                "reference": "b352cf0534aa1ae6b4d825d1e762e35d43f8a841",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.3|^8.0"
+                "php": "^8.1"
             },
             "require-dev": {
-                "pestphp/pest": "^1.18",
-                "phpstan/phpstan": "^0.12.98",
-                "symfony/var-dumper": "^5.3"
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "nesbot/carbon": "^2.67|^3.0",
+                "pestphp/pest": "^2.36|^3.0",
+                "phpstan/phpstan": "^2.0",
+                "symfony/var-dumper": "^6.2.0|^7.0.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.x-dev"
+                    "dev-master": "2.x-dev"
                 }
             },
             "autoload": {
@@ -63,7 +65,89 @@
                 "issues": "https://github.com/laravel/serializable-closure/issues",
                 "source": "https://github.com/laravel/serializable-closure"
             },
-            "time": "2022-02-11T19:23:53+00:00"
+            "time": "2025-03-19T13:51:03+00:00"
+        },
+        {
+            "name": "mjohann/call-morph",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matheusjohannaraujo/call-morph.git",
+                "reference": "8e2218c9211c1321633df39ce9e71b539a2eefa4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matheusjohannaraujo/call-morph/zipball/8e2218c9211c1321633df39ce9e71b539a2eefa4",
+                "reference": "8e2218c9211c1321633df39ce9e71b539a2eefa4",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/serializable-closure": "^2.0",
+                "opis/closure": "^3.6",
+                "php": "^7.0|^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MJohann\\Packlib\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "M. Johann",
+                    "email": "matheusjohannaraujo+mjohannpacklib@gmail.com"
+                }
+            ],
+            "description": "CallMorph is a PHP class that simplifies and secures the serialization of anonymous functions by automatically selecting the appropriate library based on the PHP version, with support for a secret key when using Laravel's Serializable Closures.",
+            "support": {
+                "issues": "https://github.com/matheusjohannaraujo/call-morph/issues",
+                "source": "https://github.com/matheusjohannaraujo/call-morph/tree/v1.1.0"
+            },
+            "time": "2025-04-22T23:00:21+00:00"
+        },
+        {
+            "name": "mjohann/simple-aes-256",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/matheusjohannaraujo/simple-aes-256.git",
+                "reference": "0f72943d4cd4aa8ad418a83bb122e0d9059742a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/matheusjohannaraujo/simple-aes-256/zipball/0f72943d4cd4aa8ad418a83bb122e0d9059742a5",
+                "reference": "0f72943d4cd4aa8ad418a83bb122e0d9059742a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MJohann\\Packlib\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "M. Johann",
+                    "email": "matheusjohannaraujo+mjohannpacklib@gmail.com"
+                }
+            ],
+            "description": "Simple AES 256 is a PHP class designed to simplify encryption and decryption using AES-256 in CBC or GCM modes.",
+            "support": {
+                "issues": "https://github.com/matheusjohannaraujo/simple-aes-256/issues",
+                "source": "https://github.com/matheusjohannaraujo/simple-aes-256/tree/v1.1.0"
+            },
+            "time": "2025-04-21T14:30:34+00:00"
         },
         {
             "name": "opis/closure",
@@ -137,7 +221,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^8.0"
+    },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.6.0"
 }

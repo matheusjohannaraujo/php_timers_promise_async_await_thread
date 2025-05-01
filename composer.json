@@ -1,0 +1,25 @@
+{
+    "name": "mjohann/zynq",
+    "description": "Zynq is a PHP library that brings JavaScript-like asynchronous features to PHP, including support for timers, promises, async/await behavior, and multi-threaded execution via RPC.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "M. Johann",
+            "email": "matheusjohannaraujo+mjohannpacklib@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0",
+        "mjohann/call-morph": "^1.1",
+        "mjohann/simple-aes-256": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "MJohann\\Packlib\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    }
+}

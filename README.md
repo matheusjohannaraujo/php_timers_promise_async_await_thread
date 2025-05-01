@@ -1,134 +1,199 @@
+# [Zynq](https://github.com/matheusjohannaraujo/zynq)
 
-## [Timers, Promise, Async, Await e Thread Parallel (RPC)](https://github.com/matheusjohannaraujo/php_timers_promise_async_await_thread)
+**Zynq** is a PHP library that brings JavaScript-like asynchronous features to PHP, including support for timers, promises, async/await behavior, and multi-threaded execution via RPC.
 
-### [Guia completo de uso no YouTube](https://www.youtube.com/watch?v=ZFbOnbJQN3U)
+## 📦 Installation
 
-### PHP ^7.2 || ^8.0
+Install via [Packagist/Composer](https://packagist.org/packages/mjohann/zynq):
 
-```php
-const DEVELOPER_INFO = [
-    "autor" => "Matheus Johann Araújo",
-    "country" => "Brasil",
-    "state" => "Pernambuco",
-    "date" => "2022-03-12"
-];
+```bash
+composer require mjohann/zynq
 ```
 
-* O termo `callback` significa função passada como parâmetro de uma função, que será chamado por uma função. Em `PHP` os `callbacks` são do tipo `callable` que significa chamável;
+## ⚙️ Requirements
 
-* A classe chamada `Closure` é responsável por representar funções anônimas e `arrow functions` (funções de seta);
+- PHP 8.0 or higher
 
-* Os `callback` normalmente são funções não nomeadas (funções anônimas ou de seta) que são passadas por parâmetro, mas nada impede que uma função nomeada seja passada como parâmetro!
+## 🚀 Features
 
-### A biblioteca <em>Timers</em> serve para definir funções (callbacks) que devem ser executadas após um determinado tempo, assim como é na linguagem <em>JavaScript</em>
+Zynq currently supports the following features:
 
-#### <em>Timers</em> implementa as funções <em>setInterval, setTimeout, clearInterval e clearTimeout:</em>
+- `setTimeout`
+- `setInterval`
+- `clearTimeout`
+- `clearInterval`
+- `async`
+- `await`
+- `WebThread::rpcSend`
 
-* `setInterval(callback, milliseconds)` executa a chamada da função callback no tempo informado de modo infinito. A função retorna um `UID` que pode ser utilizado na função `clearInterval` para remover o `setInterval` da fila de execução;
+## 🧪 Usage Examples
 
-* `setTimeout(callback, milliseconds)` executa a chamada da função callback no tempo informado de modo único. A função retorna um `UID` que pode ser utilizado na função `clearTimeout` para remover o `setTimeout` da fila de execução;
+> 📺 [Full usage guide (previous version) on YouTube](https://www.youtube.com/watch?v=ZFbOnbJQN3U)
 
-* `clearInterval(UID)` finaliza a futura execução do `setInterval` que possui o `UID` informado. A função retorna `true` (finalizou) ou `false` (não finalizou ou não encontrou a tarefa agendada);
+---
 
-* `clearTimeout(UID)` finaliza a futura execução do `setTimeout` que possui o `UID` informado. A função retorna `true` (finalizou) ou `false` (não finalizou ou não encontrou a tarefa agendada).
+### ⏲️ Timers
 
-#### Usando a biblioteca Timers:
+Zynq provides `setTimeout`, `setInterval`, `clearTimeout`, and `clearInterval`, mirroring their JavaScript counterparts.
+
+#### Key Concepts
+
+- A **callback** is a function passed as a parameter to another function. In PHP, callbacks are typically of type `callable`.
+- PHP's `Closure` class is used to represent anonymous and arrow functions.
+- Named functions can also be used as callbacks.
+
+#### Functions
+
+- `setInterval(callback, milliseconds)` — Repeatedly executes the given callback every X milliseconds. Returns a unique ID (UID) for managing the interval.
+- `setTimeout(callback, milliseconds)` — Executes the callback once after X milliseconds. Returns a UID.
+- `clearInterval(UID)` — Stops the scheduled `setInterval` by UID. Returns `true` if successful, `false` otherwise.
+- `clearTimeout(UID)` — Stops the scheduled `setTimeout` by UID. Returns `true` if successful, `false` otherwise.
+
+#### Example
 
 ```php
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
 
-require_once "lib/code.php";
+use function MJohann\Packlib\Functions\{clearInterval, setInterval, setTimeout, workWait};
+
+require_once "vendor/autoload.php";
 
 echo "Start", PHP_EOL;
 
 $counter = 1;
 
-$uid = setInterval(function() use (&$counter) {
-    echo "Counter: ", $counter++, PHP_EOL;
+$intervalId = setInterval(function () use (&$counter) {
+    echo "Counter: {$counter}", PHP_EOL;
+    $counter++;
 }, 100);
 
-setTimeout(function() {
-    echo "Half of the increments", PHP_EOL;
+setTimeout(function () {
+    echo "Halfway through", PHP_EOL;
 }, 1000);
 
-setTimeout(function() use ($uid) {
+setTimeout(function () use ($intervalId) {
     echo "Stopping the counter", PHP_EOL;
-    clearInterval($uid);
+    clearInterval($intervalId);
 }, 2000);
 
 echo "Processing...", PHP_EOL;
 
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
-$count = workWait(function() { usleep(1); });
-echo "workRun has been run ${count} times", PHP_EOL;
+$loopCount = workWait(function () {
+    usleep(1); // avoid CPU overload
+});
 
+echo "workWait was executed {$loopCount} times", PHP_EOL;
 echo "End", PHP_EOL;
 ```
 
-#### Observação: A biblioteca Timers permite escalonar o uso do núcleo de processamento, dando a impressão de que a execução do código se encontra em modo "assíncrono", porém tudo ocorre de maneira síncrona.
+> ℹ️ Although Zynq simulates asynchronous behavior, all execution is synchronous under the hood. The `Timers` utility simply defers execution while maintaining a synchronous flow.
 
-#### <em>Promise</em> é uma biblioteca que implementa o modelo de funcionamento da <em>Promise</em> em <em>JavaScript</em>.
+---
 
-* `then(callback)` método chamado quando a <em>Promise</em> é resolvida. O `callback` será executado e receberá como parâmetro o valor passado na função `resolve`;
+### 🔁 Promises
 
-* `catch(callback)` método chamado quando a <em>Promise</em> é rejeitada. O `callback` será executado e receberá como parâmetro o valor passado na função `reject`;
+Zynq includes a `Promise` class inspired by JavaScript's native Promise implementation.
 
-* `finally(callback)` método chamado após uma <em>Promise</em> ser resolvida ou rejeitada, que dispara a execução do `callback` informado como parâmetro.
+#### API
 
-#### Vejo o exemplo abaixo de como utilizar:
+- `then(callback)` — Called when the promise is resolved. The callback receives the resolved value.
+- `catch(callback)` — Called when the promise is rejected. The callback receives the rejection reason.
+- `finally(callback)` — Called when the promise is either resolved or rejected.
+
+#### Example
 
 ```php
 <?php
 
-// EN-US: Include at the beginning of the first file to be interpreted, on the WEB server use TICK sparingly
-// PT-BR: Incluir no início do primeiro arquivo a ser interpretado, no servidor WEB use o TICK com moderação
 declare(ticks=1);
 
-require_once "lib/code.php";
+use MJohann\Packlib\Promise;
+use function MJohann\Packlib\Functions\{setTimeout, workWait};
+
+require_once "vendor/autoload.php";
 
 echo "Start", PHP_EOL;
 
-$promise = new Promise(function($resolve, $reject) {
-    $call = rand(0, 1) ? $resolve : $reject;
-    setTimeout(function() use($call) {
-        $call("message");
+$promise = new Promise(function ($resolve, $reject) {
+    $callback = rand(0, 1) ? $resolve : $reject;
+
+    setTimeout(function () use ($callback) {
+        $callback("message");
     }, 1000);
 });
 
-function info_promise() {
-    global $promise;
-    echo "> monitor: ", $promise->getMonitor(), PHP_EOL;
-    echo "> state: ", $promise->getState(), PHP_EOL;
+function logPromiseStatus(Promise $promise): void
+{
+    echo "> Monitor: ", $promise->getMonitor(), PHP_EOL;
+    echo "> State: ", $promise->getState(), PHP_EOL;
 }
 
-info_promise();
+logPromiseStatus($promise);
 
-$promise->then(function($result) {
-    echo "then (${result})", PHP_EOL;
-    info_promise();
-})->catch(function($error) {
-    echo "catch (${error})", PHP_EOL;
-    info_promise();
-})->finally(function() {
-    echo "finally", PHP_EOL;
-    info_promise();
+$promise
+    ->then(function ($result) use ($promise) {
+        echo "then: ", $result, PHP_EOL;
+        logPromiseStatus($promise);
+    })
+    ->catch(function ($error) use ($promise) {
+        echo "catch: ", $error, PHP_EOL;
+        logPromiseStatus($promise);
+    })
+    ->finally(function () use ($promise) {
+        echo "finally", PHP_EOL;
+        logPromiseStatus($promise);
+    });
+
+echo "Processing loop...", PHP_EOL;
+
+for ($i = 0; $i < 10; $i++) {
+    echo "Counter: ", $i, PHP_EOL;
+    usleep(200000); // 200ms
+}
+
+$executions = workWait(function () {
+    usleep(1);
 });
 
-echo "Processing...", PHP_EOL;
-for ($counter = 0; $counter < 10; $counter++) {
-    echo "Counter: ${counter}", PHP_EOL;
-    usleep(200000);
-}
-
-// EN-US: Include after timed calls
-// PT-BR: Incluir após chamadas programadas (agendadas)
-$count = workWait(function() { usleep(1); });
-echo "workRun has been run ${count} times", PHP_EOL;
-
+echo "workWait completed. Timers executed: $executions times", PHP_EOL;
 echo "End", PHP_EOL;
 ```
+
+> 📂 More examples available in the [`example/`](example/) folder.
+
+---
+
+## 📁 Project Structure
+
+```
+zynq/
+├── src/
+│   ├── functions.php
+│   ├── Promise.php
+│   ├── Timers.php
+│   └── WebThread.php
+├── example/
+│   ├── promise.php
+│   ├── timers.php
+│   ├── thread_async_await.php
+│   ├── rpc.php
+│   └── run.bat
+├── composer.json
+├── .gitignore
+├── LICENSE
+└── README.md
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## 👨‍💻 Author
+
+Developed by [Matheus Johann Araújo](https://github.com/matheusjohannaraujo) – Pernambuco, Brazil.

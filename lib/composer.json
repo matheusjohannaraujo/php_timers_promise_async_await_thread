@@ -1,6 +1,0 @@
-{
-    "require": {
-        "opis/closure": "^3.5",
-        "laravel/serializable-closure": "^1.1"
-    }
-}
