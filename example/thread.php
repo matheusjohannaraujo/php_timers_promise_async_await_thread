@@ -13,33 +13,48 @@ WebThread::init("http://localhost/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
-// Random sleep time between 0 and 3 seconds
-$sleep = rand(0, 3);
-echo "Sleep: {$sleep}s", PHP_EOL;
+$p1 = WebThread::rpcSend(
+	function () {
+		sleep(5);
+		echo "Ok 1";
+	}
+);
 
-// Sends a parallel task as a promise and waits manually for the result
-$promise = WebThread::rpcSend(function () use ($sleep) {
-	sleep($sleep);
-	echo "Ok 1";
-});
+$p2 = WebThread::rpcSend(
+	function () {
+		sleep(3);
+		echo "Ok 2";
+	}
+);
 
-$promise
-	->then(function ($result) use ($promise) {
-		echo "then: ", PHP_EOL;
-		var_dump($result);
-	})
-	->catch(function ($error) use ($promise) {
-		echo "catch: ", PHP_EOL;
-		var_dump($error);
-	})
-	->finally(function () use ($promise) {
-		echo "finally", PHP_EOL;
-	});
+$promises = [$p1, $p2];
 
-/*$responsePromise = await($promise);
-echo "Response (promise): ";
+foreach ($promises as $key => $promise) {
+	$promise
+		->then(function ($result) {
+			echo "then: ", PHP_EOL;
+			var_export($result);
+		})
+		->catch(function ($error) {
+			echo "catch: ", PHP_EOL;
+			var_export($error);
+		})
+		->finally(function () {
+			echo PHP_EOL, "finally", PHP_EOL, PHP_EOL;
+		});
+}
+
+$p3 = WebThread::rpcSend(
+	function () {
+		sleep(1);
+		echo "Ok 3";
+	}
+);
+
+$responsePromise = await($p3);
+echo "await: ", PHP_EOL;
 var_export($responsePromise);
-echo PHP_EOL;*/
+echo PHP_EOL, PHP_EOL;
 
 // === TIMED WORK ===
 // Executes a lightweight timed task and returns how many times it was run

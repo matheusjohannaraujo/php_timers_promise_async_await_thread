@@ -54,12 +54,15 @@ class WebThread
 
     public static function rpcSend(callable|array $scripts, int $waitResponseSeconds = 0, ?string $threadHttp = null, bool $infoRequest = false)
     {
+        $isSingleCallable = is_callable($scripts);
         $scripts = self::prepareScripts($scripts);
         $threadHttp ??= self::$LOCATION_THREAD_HTTP;
 
+        $handles = [];
+        $promises = [];
         $mch = curl_multi_init();
-        $curlHandles = [];
 
+        // Para cada script (ou chamada de função no array de callables)
         foreach ($scripts as $payload) {
             $ch = curl_init();
             $curlOptions = [
@@ -77,57 +80,74 @@ class WebThread
 
             curl_setopt_array($ch, $curlOptions);
             curl_multi_add_handle($mch, $ch);
-            $curlHandles[] = $ch;
+            $handles[] = $ch;
+            $promises[] = new Promise();
         }
 
-        return new Promise(function ($resolve, $reject) use (&$mch, &$curlHandles, $infoRequest) {
-            $uid = Timers::setInterval(function () use (&$uid, &$resolve, &$reject, &$mch, &$curlHandles, $infoRequest) {
-                $active = null;
-                curl_multi_exec($mch, $active);
+        $uid = null;
+        $uid = Timers::setInterval(function () use (&$uid, &$mch, &$handles, &$promises, $infoRequest) {
+            $active = null;
+            curl_multi_exec($mch, $active);
+            $info = curl_multi_info_read($mch);
 
-                if ($active > 0) {
-                    return;
+            // Verifica quais terminaram
+            if (is_array($info)) {
+                $ch = $info['handle'];
+                $idPromisse = -1;
+
+                foreach ($handles as $key => $handle) {
+                    if ($handle === $ch) {
+                        $idPromisse = $key;
+                        break;
+                    }
                 }
 
-                Timers::clearInterval($uid);
+                $response = curl_multi_getcontent($ch);
+                $error = curl_errno($ch) ? curl_error($ch) : null;
 
-                $results = [];
-                $hasError = false;
-
-                foreach ($curlHandles as $ch) {
-                    $raw = curl_multi_getcontent($ch);
-                    $response = null;
-
-                    if ($raw !== false) {
-                        $decrypted = self::textUnprotect($raw);
-                        $response = json_decode($decrypted, true);
-                    }
-
-                    $error = curl_errno($ch) ? curl_error($ch) : null;
-
-                    if ($error) {
-                        $hasError = true;
-                    }
-
-                    $results[] = [
-                        'response' => $response,
-                        'error'    => $error,
-                        'info'     => $infoRequest ? curl_getinfo($ch) : null,
-                    ];
-
-                    curl_multi_remove_handle($mch, $ch);
-                    curl_close($ch);
+                if ($response !== false) {
+                    // Descriptografar e processar a resposta
+                    $decrypted = self::textUnprotect($response);
+                    $response = json_decode($decrypted, true);
                 }
 
-                curl_multi_close($mch);
+                // Criar resultado da requisição
+                $result = [
+                    'response' => $response,
+                    'error'    => $error,
+                    'info'     => $infoRequest ? curl_getinfo($ch) : null,
+                ];
 
-                if ($hasError) {
-                    $reject(count($results) === 1 ? $results[0] : $results);
+                // Resolver ou rejeitar a Promise dependendo do erro
+                if ($error) {
+                    // Rejeita a Promise se erro
+                    $promises[$idPromisse]->reject($result);
                 } else {
-                    $resolve(count($results) === 1 ? $results[0] : $results);
+                    // Resolve a Promise se não houver erro
+                    $promises[$idPromisse]->resolve($result);
                 }
-            }, 50);
-        });
+
+                curl_multi_remove_handle($mch, $ch);
+                curl_close($ch);
+                unset($handles[$idPromisse]);
+                unset($promises[$idPromisse]);
+            }
+            if ($active === 0 || $active === null) {
+                foreach ($promises as $key => $promise) {
+                    if ($promises[$key] !== null) {
+                        $promises[$key]->reject(null);
+                        unset($promises[$key]);
+                    }
+                }
+                unset($handles);
+                unset($promises);
+                curl_multi_close($mch);
+                Timers::clearInterval($uid);
+            }
+        }, 50);
+
+        // Se for um único callable, retorna uma única Promise, caso contrário, retorna um array de Promises
+        return $isSingleCallable ? $promises[0] : $promises;
     }
 
     public static function rpcProcess(string $script): string
