@@ -20,18 +20,13 @@ echo php -S localhost:8080 (Attention: Single Thread)
 echo -----------------------------
 echo.
 start cmd /c "php -S localhost:8080"
-timeout /t 3
+timeout /t 2
 echo.
 echo -----------------------------
-echo thread.php
+echo thread_async_await.php
 echo -----------------------------
 echo.
-php thread.php
+php thread_async_await.php
 echo.
-echo -----------------------------
-echo async_await.php
-echo -----------------------------
-echo.
-php async_await.php
 echo.
 pause
