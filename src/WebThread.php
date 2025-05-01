@@ -19,12 +19,24 @@ class WebThread
     private static string $LOCATION_WEB_THREAD_HTTP = "http://localhost/rpc.php";
     private static string $SECRET_KEY = "secret";
 
+    /**
+     * Initializes the WebThread configuration with the target HTTP endpoint and the encryption secret key.
+     *
+     * @param string $LOCATION_WEB_THREAD_HTTP URL of the RPC handler endpoint.
+     * @param string $SECRET_KEY Optional secret key used for encryption (default is "secret").
+     */
     public static function init(string $LOCATION_WEB_THREAD_HTTP, string $SECRET_KEY = "secret")
     {
         self::$LOCATION_WEB_THREAD_HTTP = $LOCATION_WEB_THREAD_HTTP;
         self::$SECRET_KEY = $SECRET_KEY;
     }
 
+    /**
+     * Encrypts and encodes a string using AES-256-CBC and Base64.
+     *
+     * @param string $text The plain text to encrypt.
+     * @return string The Base64-encoded encrypted text.
+     */
     private static function textProtect(string $text)
     {
         $aes = new SimpleAES256(self::$SECRET_KEY);
@@ -33,6 +45,12 @@ class WebThread
         return $text;
     }
 
+    /**
+     * Decodes and decrypts a string using Base64 and AES-256-CBC.
+     *
+     * @param string $text The Base64-encoded encrypted text.
+     * @return string The decrypted plain text.
+     */
     private static function textUnprotect(string $text)
     {
         $aes = new SimpleAES256(self::$SECRET_KEY);
@@ -41,6 +59,12 @@ class WebThread
         return $text;
     }
 
+    /**
+     * Prepares an array of callables for secure transport by serializing and encrypting them.
+     *
+     * @param callable|array $scripts A callable or an array of callables to be serialized and encrypted.
+     * @return array The array of encrypted, Base64-encoded scripts.
+     */
     private static function prepareScripts(callable|array $scripts)
     {
         if (is_callable($scripts)) {
@@ -60,6 +84,15 @@ class WebThread
         return $scripts;
     }
 
+    /**
+     * Sends one or more encrypted RPC callables to the remote server and returns Promises for each request.
+     *
+     * @param callable|array $scripts A callable or an array of callables to be executed remotely.
+     * @param int $waitResponseSeconds Timeout in seconds to wait for the responses (default is 600).
+     * @param string|null $threadHttp Optional custom HTTP endpoint (uses default if null).
+     * @param bool $infoRequest Whether to include cURL request info in the promise result.
+     * @return Promise|array A Promise if one callable is given, or an array of Promises otherwise.
+     */
     public static function rpcSend(callable|array $scripts, int $waitResponseSeconds = 0, ?string $threadHttp = null, bool $infoRequest = true): Promise|array
     {
         $isSingleCallable = is_callable($scripts);
@@ -159,6 +192,12 @@ class WebThread
         return $isSingleCallable ? $promises[0] : $promises;
     }
 
+    /**
+     * Processes an encrypted RPC script string by decrypting, executing, and encrypting the result.
+     *
+     * @param string $script The Base64-encoded encrypted serialized script.
+     * @return string The encrypted JSON-encoded result of the script execution.
+     */
     public static function rpcProcess(string $script): string
     {
         $script = self::textUnprotect($script);
