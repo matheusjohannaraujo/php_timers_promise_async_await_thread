@@ -5,8 +5,6 @@ declare(ticks=1);
 
 use function MJohann\Packlib\Functions\{clearInterval, setInterval, setTimeout, workWait};
 
-//use MJohann\Packlib\Timers;
-
 require_once "../vendor/autoload.php";
 
 echo "Start", PHP_EOL;

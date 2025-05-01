@@ -1,6 +1,6 @@
 {
     "name": "mjohann/zynq",
-    "description": "Zynq",
+    "description": "Zynq is a PHP library that brings JavaScript-like asynchronous features to PHP, including support for timers, promises, async/await behavior, and multi-threaded execution via RPC.",
     "type": "library",
     "license": "MIT",
     "authors": [
