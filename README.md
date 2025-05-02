@@ -16,19 +16,28 @@ composer require mjohann/zynq
 
 ## 🚀 Features
 
-Zynq currently supports the following features:
+**Zynq** is a PHP library that brings JavaScript-like asynchronous features to PHP, enabling a smoother and more efficient programming experience. The currently supported features include:
 
-- `setTimeout`
-- `setInterval`
-- `clearTimeout`
-- `clearInterval`
-- `Promise`
-- `then`
-- `catch`
-- `finally`
-- `await`
-- `RPC`
-- `async`
+### ⏱️ Timers
+
+* **`setTimeout(callback, delay)`**: Executes a function after a specified delay.
+* **`setInterval(callback, interval)`**: Repeatedly executes a function at fixed intervals.
+* **`clearTimeout(timerId)`**: Cancels a timer previously created with `setTimeout`.
+* **`clearInterval(timerId)`**: Cancels a timer previously created with `setInterval`.
+
+### 🔄 Promises & Flow Control
+
+* **`Promise`**: Native-like implementation for handling asynchronous operations.
+* **`then(onFulfilled)`**: Defines what to do when a promise is fulfilled.
+* **`catch(onRejected)`**: Handles errors when a promise is rejected.
+* **`finally(onFinally)`**: Executes code after a promise is settled, regardless of the outcome.
+* **`await`**: Waits for a promise to resolve before continuing execution.
+* **`async`**: Declares an asynchronous function that returns a promise.
+
+### 🧠 Asynchronous Execution & RPC
+
+* **`RPC` (Remote Procedure Call)**: Allows executing functions in separate processes using a lightweight RPC mechanism.
+* **Multi-process Execution**: Simulates multithreading using child processes to improve performance in asynchronous and intensive tasks.
 
 ## 🧪 Usage Examples
 
@@ -96,7 +105,7 @@ echo "End", PHP_EOL;
 
 ---
 
-### 🔁 Promises
+### 🔄 Promises & Flow Control
 
 Zynq includes a `Promise` class inspired by JavaScript's native Promise implementation.
 
