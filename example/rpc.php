@@ -2,7 +2,7 @@
 
 declare(ticks=1);
 
-use MJohann\Packlib\WebThread;
+use MJohann\Packlib\RPC;
 
 require_once "../vendor/autoload.php";
 
@@ -19,5 +19,5 @@ ini_set("post_max_size", "512M");
 ini_set("upload_max_filesize", "512M");
 ini_set("max_file_uploads", "200");
 
-WebThread::init("http://localhost/rpc.php", "secret");
-die(WebThread::rpcProcess($_POST["script"] ?? ""));
+RPC::init("http://localhost/rpc.php", "secret");
+die(RPC::process($_POST["script"] ?? ""));

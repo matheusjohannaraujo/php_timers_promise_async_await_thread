@@ -3,13 +3,13 @@
 // Allows signal handling during script execution (use sparingly on web servers)
 declare(ticks=1);
 
-use MJohann\Packlib\WebThread;
+use MJohann\Packlib\RPC;
 use function MJohann\Packlib\Functions\{async, await, workWait};
 
 require_once "../vendor/autoload.php";
 
 // Initialize the WebThread system with the RPC endpoint and a secret key
-WebThread::init("http://localhost:8080/rpc.php", "secret");
+RPC::init("http://localhost:8080/rpc.php", "secret");
 
 echo "Start", PHP_EOL;
 
@@ -17,14 +17,14 @@ echo "Start", PHP_EOL;
 // Block 1: Send two RPC tasks concurrently and attach callbacks
 // ==============================
 
-$promise1 = WebThread::rpcSend(
+$promise1 = RPC::send(
     function () {
         sleep(5);
         echo "Ok 1"; // Printed by the remote process
     }
 );
 
-$promise2 = WebThread::rpcSend(
+$promise2 = RPC::send(
     function () {
         sleep(3);
         echo "Ok 2"; // Printed by the remote process
@@ -49,7 +49,7 @@ foreach ([$promise1, $promise2] as $promise) {
 // Block 2: Await a single RPC task
 // ==============================
 
-$promise3 = WebThread::rpcSend(
+$promise3 = RPC::send(
     function () {
         sleep(1);
         echo "Ok 3"; // Printed by the remote process
@@ -66,11 +66,11 @@ try {
 }
 
 // ==============================
-// Block 3: Launch 10 async tasks with callbacks
+// Block 3: Launch 5 async tasks with callbacks
 // ==============================
 
 $maxSleepTime = 3;
-$totalTasks = 10;
+$totalTasks = 5;
 
 for ($i = 1; $i <= $totalTasks; $i++) {
     async(function () use ($maxSleepTime) {
@@ -88,7 +88,7 @@ for ($i = 1; $i <= $totalTasks; $i++) {
 }
 
 // ==============================
-// Block 4: Launch 10 async tasks and wait for each (blocking)
+// Block 4: Launch 5 async tasks and wait for each (blocking)
 // ==============================
 
 $asyncTasks = [];

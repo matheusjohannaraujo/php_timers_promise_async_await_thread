@@ -12,7 +12,7 @@ namespace MJohann\Packlib\Functions;
 
 use MJohann\Packlib\Timers;
 use MJohann\Packlib\Promise;
-use MJohann\Packlib\WebThread;
+use MJohann\Packlib\RPC;
 
 if (!function_exists(__NAMESPACE__ . '\setInterval')) {
     /**
@@ -103,7 +103,7 @@ if (!function_exists(__NAMESPACE__ . '\async')) {
      */
     function async(callable $call): Promise
     {
-        return WebThread::rpcSend($call);
+        return RPC::send($call);
     }
 }
 

@@ -5,7 +5,7 @@
 	Country: Brasil
 	State: Pernambuco
 	Developer: Matheus Johann Araujo
-	Date: 2025-05-01
+	Date: 2025-05-02
 */
 
 namespace MJohann\Packlib;
@@ -13,21 +13,21 @@ namespace MJohann\Packlib;
 use MJohann\Packlib\CallMorph;
 use MJohann\Packlib\SimpleAES256;
 
-class WebThread
+class RPC
 {
 
-    private static string $LOCATION_WEB_THREAD_HTTP = "http://localhost/rpc.php";
+    private static string $LOCATION_THREAD_HTTP = "http://localhost:8080/rpc.php";
     private static string $SECRET_KEY = "secret";
 
     /**
-     * Initializes the WebThread configuration with the target HTTP endpoint and the encryption secret key.
+     * Initializes the RPC configuration with the target HTTP endpoint and the encryption secret key.
      *
-     * @param string $LOCATION_WEB_THREAD_HTTP URL of the RPC handler endpoint.
+     * @param string $LOCATION_THREAD_HTTP URL of the RPC handler endpoint.
      * @param string $SECRET_KEY Optional secret key used for encryption (default is "secret").
      */
-    public static function init(string $LOCATION_WEB_THREAD_HTTP, string $SECRET_KEY = "secret")
+    public static function init(string $LOCATION_THREAD_HTTP, string $SECRET_KEY = "secret")
     {
-        self::$LOCATION_WEB_THREAD_HTTP = $LOCATION_WEB_THREAD_HTTP;
+        self::$LOCATION_THREAD_HTTP = $LOCATION_THREAD_HTTP;
         self::$SECRET_KEY = $SECRET_KEY;
     }
 
@@ -93,11 +93,11 @@ class WebThread
      * @param bool $infoRequest Whether to include cURL request info in the promise result.
      * @return Promise|array A Promise if one callable is given, or an array of Promises otherwise.
      */
-    public static function rpcSend(callable|array $scripts, int $waitResponseSeconds = 0, ?string $threadHttp = null, bool $infoRequest = true): Promise|array
+    public static function send(callable|array $scripts, int $waitResponseSeconds = 0, ?string $threadHttp = null, bool $infoRequest = true): Promise|array
     {
         $isSingleCallable = is_callable($scripts);
         $scripts = self::prepareScripts($scripts);
-        $threadHttp ??= self::$LOCATION_WEB_THREAD_HTTP;
+        $threadHttp ??= self::$LOCATION_THREAD_HTTP;
 
         $handles = [];
         $promises = [];
@@ -198,7 +198,7 @@ class WebThread
      * @param string $script The Base64-encoded encrypted serialized script.
      * @return string The encrypted JSON-encoded result of the script execution.
      */
-    public static function rpcProcess(string $script): string
+    public static function process(string $script): string
     {
         $script = self::textUnprotect($script);
         if (!empty($script)) {

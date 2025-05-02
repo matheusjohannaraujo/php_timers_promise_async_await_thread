@@ -22,9 +22,13 @@ Zynq currently supports the following features:
 - `setInterval`
 - `clearTimeout`
 - `clearInterval`
-- `async`
+- `Promise`
+- `then`
+- `catch`
+- `finally`
 - `await`
-- `WebThread::rpcSend`
+- `RPC`
+- `async`
 
 ## 🧪 Usage Examples
 
@@ -88,7 +92,7 @@ echo "workWait was executed {$loopCount} times", PHP_EOL;
 echo "End", PHP_EOL;
 ```
 
-> ℹ️ Although Zynq simulates asynchronous behavior, all execution is synchronous under the hood. The `Timers` utility simply defers execution while maintaining a synchronous flow.
+> ℹ️ Zinq enables staggered execution of the main thread through the features provided by Timers. However, blocking actions (such as long-running or synchronous code) can interrupt this staggered execution. True parallelism is only achieved when using the RPC::send feature or its alias async.
 
 ---
 
@@ -173,11 +177,11 @@ zynq/
 │   ├── functions.php
 │   ├── Promise.php
 │   ├── Timers.php
-│   └── WebThread.php
+│   └── RPC.php
 ├── example/
 │   ├── promise.php
 │   ├── timers.php
-│   ├── thread_async_await.php
+│   ├── rpc_async_await.php
 │   ├── rpc.php
 │   └── run.bat
 ├── composer.json
