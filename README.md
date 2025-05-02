@@ -10,19 +10,13 @@ Install via [Packagist/Composer](https://packagist.org/packages/mjohann/zynq):
 composer require mjohann/zynq
 ```
 
----
-
 ## ⚙️ Requirements
 
 - PHP 8.0 or higher
 
----
-
 ## 🚀 Features
 
 **Zynq** is a PHP library that brings JavaScript-like asynchronous features to PHP, enabling a smoother and more efficient programming experience. The currently supported features include:
-
----
 
 ### ⏱️ Timers
 
@@ -48,8 +42,6 @@ composer require mjohann/zynq
 ## 🧪 Usage Examples
 
 > 📺 [Full usage guide (previous version) on YouTube](https://www.youtube.com/watch?v=ZFbOnbJQN3U)
-
----
 
 ### ⏲️ Timers
 
@@ -103,8 +95,6 @@ workWait(function () { usleep(1); });
 ```
 
 > ℹ️ Zinq enables staggered execution of the main thread through the features provided by Timers. However, blocking actions (such as long-running or synchronous code) can interrupt this staggered execution. True parallelism is only achieved when using the RPC::send feature or its alias async.
-
----
 
 ### 🔄 Promises & Flow Control
 
@@ -202,8 +192,6 @@ workWait(function () { usleep(1); });
 
 > 📂 More examples available in the [`example/`](example/) folder.
 
----
-
 ## 📁 Project Structure
 
 ```
@@ -225,13 +213,9 @@ zynq/
 └── README.md
 ```
 
----
-
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
 
 ## 👨‍💻 Author
 
