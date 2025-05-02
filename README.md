@@ -10,13 +10,19 @@ Install via [Packagist/Composer](https://packagist.org/packages/mjohann/zynq):
 composer require mjohann/zynq
 ```
 
+---
+
 ## ⚙️ Requirements
 
 - PHP 8.0 or higher
 
+---
+
 ## 🚀 Features
 
 **Zynq** is a PHP library that brings JavaScript-like asynchronous features to PHP, enabling a smoother and more efficient programming experience. The currently supported features include:
+
+---
 
 ### ⏱️ Timers
 
@@ -172,6 +178,48 @@ $executions = workWait(function () {
 
 echo "workWait completed. Timers executed: $executions times", PHP_EOL;
 echo "End", PHP_EOL;
+```
+
+## 📡 RPC (Remote Procedure Call)
+
+Zynq provides a lightweight RPC system that allows you to register and call functions asynchronously in isolated processes. This is useful for offloading heavy computations or running code in parallel without blocking the main execution thread.
+
+### 🔧 How It Works
+
+* **Function Registration**: You can register named functions to be called remotely.
+* **Asynchronous Execution**: Registered functions are invoked asynchronously and return a `Promise`.
+* **Process Isolation**: Each call runs in a separate process, ensuring non-blocking execution and memory isolation.
+
+### 🧪 Example Usage
+
+```php
+
+<?php
+declare(ticks=1);
+
+use MJohann\Packlib\RPC;
+use function MJohann\Packlib\Functions\{await, workWait};
+
+require_once "vendor/autoload.php";
+
+// Initialize the WebThread system with the RPC endpoint and a secret key
+RPC::init("http://localhost:8080/rpc.php", "secret");
+
+// Send a remote function
+$promise = RPC::send(
+    function () {
+        sleep(2);
+        return 5 + 3;
+    }
+);
+
+// Call the registered function asynchronously
+$result = await($promise);
+echo "Sum: ", $result, PHP_EOL; // Sum: 8
+
+workWait(function () {
+    usleep(1); // Sleep briefly in each iteration
+});
 ```
 
 > 📂 More examples available in the [`example/`](example/) folder.
