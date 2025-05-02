@@ -99,12 +99,7 @@ setTimeout(function () use ($intervalId) {
 
 echo "Processing...", PHP_EOL;
 
-$loopCount = workWait(function () {
-    usleep(1); // avoid CPU overload
-});
-
-echo "workWait was executed {$loopCount} times", PHP_EOL;
-echo "End", PHP_EOL;
+workWait(function () { usleep(1); });
 ```
 
 > ℹ️ Zinq enables staggered execution of the main thread through the features provided by Timers. However, blocking actions (such as long-running or synchronous code) can interrupt this staggered execution. True parallelism is only achieved when using the RPC::send feature or its alias async.
@@ -143,26 +138,15 @@ $promise = new Promise(function ($resolve, $reject) {
     }, 1000);
 });
 
-function logPromiseStatus(Promise $promise): void
-{
-    echo "> Monitor: ", $promise->getMonitor(), PHP_EOL;
-    echo "> State: ", $promise->getState(), PHP_EOL;
-}
-
-logPromiseStatus($promise);
-
 $promise
-    ->then(function ($result) use ($promise) {
+    ->then(function ($result) {
         echo "then: ", $result, PHP_EOL;
-        logPromiseStatus($promise);
     })
-    ->catch(function ($error) use ($promise) {
+    ->catch(function ($error) {
         echo "catch: ", $error, PHP_EOL;
-        logPromiseStatus($promise);
     })
-    ->finally(function () use ($promise) {
+    ->finally(function () {
         echo "finally", PHP_EOL;
-        logPromiseStatus($promise);
     });
 
 echo "Processing loop...", PHP_EOL;
@@ -172,12 +156,7 @@ for ($i = 0; $i < 10; $i++) {
     usleep(200000); // 200ms
 }
 
-$executions = workWait(function () {
-    usleep(1);
-});
-
-echo "workWait completed. Timers executed: $executions times", PHP_EOL;
-echo "End", PHP_EOL;
+workWait(function () { usleep(1); });
 ```
 
 ## 📡 RPC (Remote Procedure Call)
@@ -195,6 +174,7 @@ Zynq provides a lightweight RPC system that allows you to register and call func
 ```php
 
 <?php
+
 declare(ticks=1);
 
 use MJohann\Packlib\RPC;
@@ -217,9 +197,7 @@ $promise = RPC::send(
 $result = await($promise);
 echo "Sum: ", $result, PHP_EOL; // Sum: 8
 
-workWait(function () {
-    usleep(1); // Sleep briefly in each iteration
-});
+workWait(function () { usleep(1); });
 ```
 
 > 📂 More examples available in the [`example/`](example/) folder.
